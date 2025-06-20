@@ -75,8 +75,13 @@ public class main
                     System.out.print("Enter Password: ");
                     String newPassword = scanner.nextLine();
 
+                    System.out.print("Enter Vehicle Type: ");
+                    String vehicleType = scanner.nextLine;
+                    System.out.print("Enter Vehicle's Plate No.: ");
+                    String vehicleNo = scanner.nextLine();
+
                     
-                    Vehicle newVehicle = new Vehicle("ABC123", "Toyota");
+                    Vehicle newVehicle = new Vehicle(vehicleNo, vehicleType);
                     Customer newCustomer = new Customer(newId, newName, newEmail, newPassword, newVehicle);
                     newCustomer.register();
                     break;

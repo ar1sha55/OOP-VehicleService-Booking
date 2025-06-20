@@ -1,6 +1,6 @@
 public class Admin extends User 
 {
-    private ReportGenerator reportGenerator = new ReportGenerator(); // Composition
+    private ReportGenerator reportGenerator = new ReportGenerator(); /
 
     public Admin(String id, String name, String email, String password) 
     {
