@@ -23,31 +23,34 @@ public class Customer extends User
     @Override
     public void login(String email, String password) throws InvalidLogin 
     {
-        try 
+        try (BufferedReader reader = new BufferedReader(new FileReader("usersCust.txt"))) 
         {
-            BufferedReader reader = new BufferedReader(new FileReader("users.txt"));
-            String line;
-            boolean found = false;
+        String line;
+        boolean found = false;
 
         while ((line = reader.readLine()) != null) 
         {
-            String[] data = line.split("\\|");
-            if (data.length >= 4) {
-                String fileEmail = data[2];
-                String filePassword = data[3];
+            String cleanLine = line.replaceAll("\\[\\d+\\]", "");
+
+            String[] parts = cleanLine.split("\\|");
+            if (parts.length >= 4) 
+            {
+                String fileId = parts[0];
+                String fileName = parts[1];
+                String fileEmail = parts[2];
+                String filePassword = parts[3];
 
                 if (fileEmail.equals(email) && filePassword.equals(password)) 
                 {
-                    setId(data[0]);
-                    setName(data[1]);
-                    setEmail(fileEmail);
-                    setPassword(filePassword);
+                    this.setId(fileId);
+                    this.setName(fileName);
+                    this.setEmail(fileEmail);
+                    this.setPassword(filePassword);
                     found = true;
                     break;
                 }
             }
         }
-        reader.close();
 
         if (!found) 
         {
@@ -59,6 +62,7 @@ public class Customer extends User
         catch (IOException e) 
         {
         System.out.println("Error reading users.txt: " + e.getMessage());
+        }
     }
 }
 

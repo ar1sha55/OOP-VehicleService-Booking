@@ -174,7 +174,7 @@ public class main
         }
     }
 
-    public static void showCustomerDashboard(Scanner scanner, Customer customer) 
+    public static void customerDashboard(Scanner scanner, Customer customer) 
     {
         int choice;
         do 
