@@ -1,6 +1,6 @@
 public class Admin extends User 
 {
-    private ReportGenerator reportGenerator = new ReportGenerator(); /
+    private ReportGenerator report = new ReportGenerator(); 
 
     public Admin(String id, String name, String email, String password) 
     {
@@ -32,6 +32,6 @@ public class Admin extends User
 
     public void generateSystemReport() 
     {
-        reportGenerator.generate();
+        report.generate();
     }
 }

@@ -1,6 +1,6 @@
 import java.io.*;
 
-public abstract class User implements IUser 
+public abstract class User implements InterfaceUser 
 {
   private String id;
   private String name;
