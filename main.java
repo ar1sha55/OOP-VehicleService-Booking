@@ -76,7 +76,7 @@ public class main
                     String newPassword = scanner.nextLine();
 
                     System.out.print("Enter Vehicle Type: ");
-                    String vehicleType = scanner.nextLine;
+                    String vehicleType = scanner.nextLine();
                     System.out.print("Enter Vehicle's Plate No.: ");
                     String vehicleNo = scanner.nextLine();
 
