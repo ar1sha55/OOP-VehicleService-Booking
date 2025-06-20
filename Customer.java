@@ -11,14 +11,19 @@ public class Customer extends User
         this.bookings = new Vector<>();
     }
 
-    public Customer(){}
+    public Customer() 
+    {
+    super("", "", "", "");  
+    this.vehicle = null;
+    this.bookings = new Vector<>();
+    }
+
 
     @Override
     public void register() 
     {   
         totalCustomer++;
         saveToFile(totalCustomer);
-        System.out.println("\nYou registered successfully. Please login again. :)");
     }
 
         
@@ -66,7 +71,7 @@ public class Customer extends User
         System.out.println("Error reading users.txt: " + e.getMessage());
         }
     }
-}
+
 
 
     @Override

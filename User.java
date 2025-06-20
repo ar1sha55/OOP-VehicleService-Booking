@@ -36,7 +36,7 @@ public abstract class User implements InterfaceUser
 
   public void saveToFile(int x) 
   {
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("users.txt", true))) 
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersCust.txt", true))) 
     {
       bw.write("[" + x + "] " + id + "|" + name + "|" + email + "|" + password);
       bw.newLine();

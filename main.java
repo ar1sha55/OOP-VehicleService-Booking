@@ -86,6 +86,7 @@ public class main
                     Customer newCustomer = new Customer(newId, newName, newEmail, newPassword, newVehicle);
                     newCustomer.register();
                     clearScreen();
+                    System.out.println("\nYou registered successfully. Please login again. :)\n");
                     break;
 
                 case 2:
@@ -94,6 +95,7 @@ public class main
                     String loginEmail = scanner.nextLine();
                     System.out.print("Enter Password: ");
                     String loginPassword = scanner.nextLine();
+                    clearScreen();
 
                     Customer c = new Customer();
 
@@ -179,7 +181,7 @@ public class main
         int choice;
         do 
         {
-            System.out.println("============ Welcome, " + customer.getName() + "!! ============");
+            System.out.println("\n\n============ Welcome, " + customer.getName() + "!! ============");
             System.out.println("[1] View Available Services");
             System.out.println("[2] Book a Service");
             System.out.println("[3] Logout");
@@ -198,6 +200,7 @@ public class main
                 break;
 
             case 3:
+                clearScreen();
                 System.out.println("Logging out...");
                 break;
 
