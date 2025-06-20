@@ -1,6 +1,7 @@
 public class Admin extends User 
 {
-    private ReportGenerator report = new ReportGenerator(); 
+    private static int totalAdmin = 0;
+    //private ReportGenerator report = new ReportGenerator(); 
 
     public Admin(String id, String name, String email, String password) 
     {
@@ -10,7 +11,8 @@ public class Admin extends User
     @Override
     public void register() 
     {
-        saveToFile("Admin");
+        totalAdmin++;
+        saveToFile(totalAdmin);
         System.out.println("Admin registered successfully.");
     }
 

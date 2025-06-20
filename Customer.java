@@ -11,6 +11,8 @@ public class Customer extends User
         this.bookings = new Vector<>();
     }
 
+    public Customer(){}
+
     @Override
     public void register() 
     {   
