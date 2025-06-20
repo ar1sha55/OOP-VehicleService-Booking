@@ -22,7 +22,9 @@ public class main
             System.out.println("[3] Exit");
             System.out.print("Enter your choice: ");
             mainChoice = scanner.nextInt();
+            System.out.println("====================================================");
             scanner.nextLine(); 
+            clearScreen();
 
             switch (mainChoice) 
             {
@@ -52,15 +54,14 @@ public class main
         int choice;
         do 
         {
-            System.out.println("\n=============== WELCOME TO VEHICLE SERVICE BOOKING SYSTEM ===============");
-            System.out.println("\n-- CUSTOMER MENU --");
+            System.out.println("\n=============== WELCOME TO VEHICLE SERVICE BOOKING SYSTEM!! ===============");
             System.out.println("[1] I'm a new user (Register)");
             System.out.println("[2] I already have an account (Login)");
-            System.out.println("[3] Back to Main Menu");
-            //System.out.pritnln("[4] Book Service"); uncomment bila dah siap service class
+            System.out.println("[3] Return");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
             scanner.nextLine(); 
+            clearScreen();
 
             switch (choice) 
             {
@@ -84,6 +85,7 @@ public class main
                     Vehicle newVehicle = new Vehicle(vehicleNo, vehicleType);
                     Customer newCustomer = new Customer(newId, newName, newEmail, newPassword, newVehicle);
                     newCustomer.register();
+                    clearScreen();
                     break;
 
                 case 2:
@@ -93,13 +95,12 @@ public class main
                     System.out.print("Enter Password: ");
                     String loginPassword = scanner.nextLine();
 
-                    
-                    Customer dummyCustomer = new Customer("C001", "Alice", "alice@example.com", "1234", null);
+                    Customer c = 
 
                     try 
                     {
-                        dummyCustomer.login(loginEmail, loginPassword);
-                        
+                        c.login(loginEmail, loginPassword);
+                        customerDashboard(scanner, c);
                     } 
                     catch (InvalidLogin e) 
                     {
@@ -172,4 +173,38 @@ public class main
             System.out.println(e.getMessage());
         }
     }
+
+    public static void showCustomerDashboard(Scanner scanner, Customer customer) 
+    {
+        int choice;
+        do 
+        {
+            System.out.println("============ Welcome, " + customer.getName() "!! ============");
+            System.out.println("[1] View Available Services");
+            System.out.println("[2] Book a Service");
+            System.out.println("[3] Logout");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) 
+            {
+                case 1:
+                //service catalog
+                break;
+
+            case 2:
+                //book service
+                break;
+
+            case 3:
+                System.out.println("Logging out...");
+                break;
+
+            default:
+                System.out.println("Invalid choice. Please choose 1-3.");
+        }
+    } while (choice != 3);
+    }
+
 }

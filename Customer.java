@@ -1,29 +1,67 @@
 public class Customer extends User 
 {
+    int static totalCustomer=0;
     private Vehicle vehicle; 
+    private Vector <Booking> bookings; 
 
     public Customer(String id, String name, String email, String password, Vehicle vehicle) 
     {
         super(id, name, email, password); 
         this.vehicle = vehicle;
+        this.bookings = new Vector<>;
     }
 
     @Override
     public void register() 
-    {
-        saveToFile("Customer");
-        System.out.println("Customer registered successfully.");
+    {   
+        totalCustomer++;
+        saveToFile("[" totalCustomer "]");
+        System.out.println("\nYou registered successfully. Please login again. :)");
     }
 
+        
     @Override
-    public void login(String email, String password) throws InvalidLogin
+    public void login(String email, String password) throws InvalidLogin 
     {
-        if (!getEmail().equals(email) || !getPassword().equals(password)) 
+        try 
         {
-            throw new InvalidLogin("Login failed for customer.");
+            BufferedReader reader = new BufferedReader(new FileReader("users.txt"));
+            String line;
+            boolean found = false;
+
+        while ((line = reader.readLine()) != null) 
+        {
+            String[] data = line.split("\\|");
+            if (data.length >= 4) {
+                String fileEmail = data[2];
+                String filePassword = data[3];
+
+                if (fileEmail.equals(email) && filePassword.equals(password)) 
+                {
+                    setId(data[0]);
+                    setName(data[1]);
+                    setEmail(fileEmail);
+                    setPassword(filePassword);
+                    found = true;
+                    break;
+                }
+            }
         }
-        System.out.println("Customer logged in.");
+        reader.close();
+
+        if (!found) 
+        {
+            throw new InvalidLogin("Login failed. Invalid email or password.");
+        }
+
+        System.out.println("Login successful. Welcome, " + getName() + "!");
+        } 
+        catch (IOException e) 
+        {
+        System.out.println("Error reading users.txt: " + e.getMessage());
     }
+}
+
 
     @Override
     public void showRole() 

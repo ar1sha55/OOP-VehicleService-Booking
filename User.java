@@ -34,11 +34,11 @@ public abstract class User implements InterfaceUser
 
   public abstract void showRole();
 
-  public void saveToFile(String role) 
+  public void saveToFile(int x) 
   {
     try (BufferedWriter bw = new BufferedWriter(new FileWriter("users.txt", true))) 
     {
-      bw.write(role + "," + id + "," + name + "," + email + "," + password);
+      bw.write(x + id + "|" + name + "|" + email + "|" + password);
       bw.newLine();
     } 
     catch (IOException e) 
