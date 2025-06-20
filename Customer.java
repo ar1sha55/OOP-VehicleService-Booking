@@ -1,10 +1,10 @@
 public class Customer extends User 
 {
-    private Vehicle vehicle; // Aggregation
+    private Vehicle vehicle; 
 
     public Customer(String id, String name, String email, String password, Vehicle vehicle) 
     {
-        super(id, name, email, password); // calling superclass constructor
+        super(id, name, email, password); 
         this.vehicle = vehicle;
     }
 
