@@ -1,6 +1,6 @@
 public class Customer extends User 
 {
-    int static totalCustomer=0;
+    private static int totalCustomer=0;
     private Vehicle vehicle; 
     private Vector <Booking> bookings; 
 
@@ -8,14 +8,14 @@ public class Customer extends User
     {
         super(id, name, email, password); 
         this.vehicle = vehicle;
-        this.bookings = new Vector<>;
+        this.bookings = new Vector<>();
     }
 
     @Override
     public void register() 
     {   
         totalCustomer++;
-        saveToFile("[" totalCustomer "]");
+        saveToFile(totalCustomer);
         System.out.println("\nYou registered successfully. Please login again. :)");
     }
 

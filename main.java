@@ -95,7 +95,7 @@ public class main
                     System.out.print("Enter Password: ");
                     String loginPassword = scanner.nextLine();
 
-                    Customer c = 
+                    Customer c = new Customer();
 
                     try 
                     {
@@ -179,7 +179,7 @@ public class main
         int choice;
         do 
         {
-            System.out.println("============ Welcome, " + customer.getName() "!! ============");
+            System.out.println("============ Welcome, " + customer.getName() + "!! ============");
             System.out.println("[1] View Available Services");
             System.out.println("[2] Book a Service");
             System.out.println("[3] Logout");
