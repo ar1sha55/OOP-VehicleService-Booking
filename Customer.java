@@ -35,7 +35,7 @@ public class Customer extends User
     {
         if (vehicle != null) 
         {
-            System.out.println("Vehicle: " + vehicle.getModel());
+            //System.out.println("Vehicle: " + vehicle.getModel());
         } 
         else 
         {
