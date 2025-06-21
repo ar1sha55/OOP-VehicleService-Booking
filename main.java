@@ -1,4 +1,4 @@
-import java.util.Scanner;
+import java.util.*; //tukar ni je from Scanner to *
 import java.io.*;
 
 public class main 
