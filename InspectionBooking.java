@@ -4,7 +4,7 @@ import java.time.LocalTime;
 class InspectionBooking extends Booking {
     private static int cID = 2000;
     
-    public InspectionBooking(Customer customer, Vehicle vehicle, LocalDate date, LocalTime time, CleaningPackage selectedPkg) {
+    public InspectionBooking(Customer customer, Vehicle vehicle, LocalDate date, LocalTime time) {
         super(cID++, customer, vehicle, date, time);
     }
 
