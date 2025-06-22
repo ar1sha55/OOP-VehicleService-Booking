@@ -1,5 +1,9 @@
 import java.util.*;
 
+public enum vehicleType {
+    SEDAN, SUV, MPV
+}
+
 class Vehicle{
     private String plateNum;
     private int lastServiceOdometerType1;
@@ -7,20 +11,20 @@ class Vehicle{
     private int lastServiceOdometerType3;
     private int lastServiceOdometerType4;
     private int currentOdometer;
-    private String vehicleType; //sedan,suv,mpv
+    private vehicleType vehicleType; //sedan,suv,mpv
     private String colour;
     private String brand;
     private String model;
 
     //Constructor
-    public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, String vType, String c, String b, String m){
+    public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, vehicleType vType, String c, String b, String m){
         plateNum = pN.toUpperCase();
         lastServiceOdometerType1 = lSodo1;
         lastServiceOdometerType2 = lSodo2;
         lastServiceOdometerType3 = lSodo3;
         lastServiceOdometerType4 = lSodo4;
         currentOdometer = cOdo;
-        vehicleType = vType.toUpperCase();
+        vehicleType = vType;
         colour = c.toUpperCase();
         brand = b.toUpperCase();
         model = m.toUpperCase();
@@ -33,7 +37,7 @@ class Vehicle{
     public int getlastServiceOdometerType3 () {return lastServiceOdometerType3;}
     public int getlastServiceOdometerType4 () {return lastServiceOdometerType4;}
     public int getCurrentOdometer () {return currentOdometer;}
-    public String getVehicleType () {return vehicleType;}
+    public vehicleType getVehicleType () {return vehicleType;}
     public String getColour () {return colour;}
     public String getBrand () {return brand;}
     public String getModel() {return model;}
@@ -45,7 +49,7 @@ class Vehicle{
     public void setlastServiceOdometerType3 (int lastServiceOdometerType3) {this.lastServiceOdometerType3 = lastServiceOdometerType3;}
     public void setlastServiceOdometerType4 (int lastServiceOdometerType4) {this.lastServiceOdometerType4 = lastServiceOdometerType4;}
     public void setCurrentOdometer (int currentOdometer) {this.currentOdometer = currentOdometer;}
-    public void setVehicleType (String vehicleType) {this.vehicleType = vehicleType;}
+    public void setVehicleType (vehicleType vehicleType) {this.vehicleType = vehicleType;}
     public void setColour (String colour) {this.colour = colour;}
     public void setBrand (String brand) {this.brand = brand;}
     public void setModel(String model) {this.model = model;}
@@ -64,8 +68,8 @@ class Vehicle{
     public ArrayList<String> serviceReminder(){
         ArrayList<String> reminder = new ArrayList<>();
 
-            switch (vehicleType.toUpperCase()){
-                case "SEDAN":
+            switch (vehicleType){
+                case SEDAN:
                     if ((lastServiceOdometerType1 + 5000) - currentOdometer >0) {
                         reminder.add(((lastServiceOdometerType1 + 5000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
                     }
@@ -88,7 +92,7 @@ class Vehicle{
 
                     break;
 
-                    case "SUV":
+                    case SUV:
                     if ((lastServiceOdometerType1 + 7000) - currentOdometer >0) {
                         reminder.add(((lastServiceOdometerType1 + 7000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
                     }
@@ -111,7 +115,7 @@ class Vehicle{
 
                     break;
 
-                    case "MPV":
+                    case MPV:
                     if ((lastServiceOdometerType1 + 10000) - currentOdometer >0) {
                         reminder.add(((lastServiceOdometerType1 + 10000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
                     }
@@ -139,5 +143,26 @@ class Vehicle{
                     break;
                 }
         return reminder;
+    }
+
+    //Display owned vehicle information
+    public void displayInfo(){
+        System.out.println("-------------- Vehicle Info --------------");
+        System.out.println("Plate Number: " + plateNum);
+        System.out.println("Brand: " + brand);
+        System.out.println("Model: " + model);
+        System.out.println("Colour: " + colour);
+        System.out.println("Vehicle Type: " + vehicleType);
+        System.out.println("Current Odometer: " + currentOdometer);
+        System.out.println("-- Last Service Odometer Info --");
+        System.out.println("Preventative Maintenance & Oil Change: " + lastServiceOdometerType1);
+        System.out.println("Tire Rotation: " + lastServiceOdometerType2);
+        System.out.println("Wheel Balancing, Brake Inspection, and Alignment Check: " + lastServiceOdometerType3);
+        System.out.println("Cooling System, Engine, and Transmission Check: " + lastServiceOdometerType4);
+    }
+
+    @Override
+    public String toString() {
+        return "Vehicle (" + plateNum + ")" + brand + " - " + model + "(" + colour + ", " + vehicleType + ")";
     }
 }
