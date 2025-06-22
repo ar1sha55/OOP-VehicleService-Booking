@@ -92,4 +92,4 @@ public class Customer extends User
             System.out.println("No vehicle registered.");
         }
     }
-}
+} //nak tengok sync tak
