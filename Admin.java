@@ -3,9 +3,9 @@ public class Admin extends User
     private static int totalAdmin = 0;
     //private ReportGenerator report = new ReportGenerator(); 
 
-    public Admin(String id, String name, String email, String password) 
+    public Admin(String name, String email, String password) 
     {
-        super(id, name, email, password);
+        super(name, email, password);
     }
 
     @Override

@@ -4,22 +4,29 @@ import java.io.*;
 public class Customer extends User 
 {
     private static int totalCustomer=0;
+    private String phoneNo;
     private Vehicle vehicle; 
     private Vector <Booking> bookings; 
 
-    public Customer(String id, String name, String email, String password, Vehicle vehicle) 
+    public Customer(String name, String email, String password, String phoneNo, Vehicle vehicle) 
     {
-        super(id, name, email, password); 
+        super(name, email, password); 
+        this.phoneNo = phoneNo;
         this.vehicle = vehicle;
         //this.bookings = new Vector<>();
     }
 
+
     public Customer() 
     {
-    super("", "", "", "");  
+    super("", "", "");  
+    this.phoneNo = "";
     this.vehicle = null;
     this.bookings = new Vector<>();
     }
+
+    public void setPhoneNo(String phoneNo){this.phoneNo = phoneNo;}
+    public String getPhoneNo(){return phoneNo;}
 
 
     @Override
@@ -45,17 +52,17 @@ public class Customer extends User
             String[] parts = cleanLine.split("\\|");
             if (parts.length >= 4) 
             {
-                String fileId = parts[0];
                 String fileName = parts[1];
                 String fileEmail = parts[2];
                 String filePassword = parts[3];
+                String filePhoneNo = parts[4]
 
                 if (fileEmail.equals(email) && filePassword.equals(password)) 
                 {
-                    this.setId(fileId);
                     this.setName(fileName);
                     this.setEmail(fileEmail);
                     this.setPassword(filePassword);
+                    this.setPhoneNo(filePhoneNo);
                     found = true;
                     break;
                 }

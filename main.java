@@ -16,6 +16,11 @@ public class main
         Scanner scanner = new Scanner(System.in);
         int mainChoice;
 
+        Admin admin1 = new Admin("Nur Zahirah", "zahirah@gmail.com", "admin123");
+        Admin admin2 = new Admin("Evelyn Ang", "evelyn@example.com", "admin456");
+        Admin admin3 = new Admin("Aron Aziz", "aron@example.com", "admin789");       
+                 
+                 
         do 
         {
             System.out.println("========== VEHICLE SERVICE BOOKING SYSTEM ==========");
@@ -68,13 +73,13 @@ public class main
             switch (choice) 
             {
                 case 1:
-                    
-                    System.out.print("Enter ID: ");
-                    String newId = scanner.nextLine();
+
                     System.out.print("Enter Name: ");
                     String newName = scanner.nextLine();
                     System.out.print("Enter Email: ");
                     String newEmail = scanner.nextLine();
+                    System.out.print("Enter Phone No.: ");
+                    String newPhoneNo = scanner.nextLine();
                     System.out.print("Enter Password: ");
                     String newPassword = scanner.nextLine();
 
@@ -84,9 +89,9 @@ public class main
                     String vehicleNo = scanner.nextLine();
 
                     
-                    //Vehicle newVehicle = new Vehicle(vehicleNo, vehicleType);
-                    //Customer newCustomer = new Customer(newId, newName, newEmail, newPassword, newVehicle);
-                    //newCustomer.register();
+                    Vehicle newVehicle = new Vehicle(vehicleNo, vehicleType);
+                    Customer newCustomer = new Customer(newName, newEmail, newPassword, newPhoneNo, newVehicle);
+                    newCustomer.register();
                     clearScreen();
                     System.out.println("\nYou registered successfully. Please login again. :)\n");
                     break;
@@ -125,7 +130,6 @@ public class main
     public static void AdminMenu(Scanner scanner) 
     {
         int choice;
-        Admin admin = new Admin("A001", "Bob", "admin@example.com", "admin123");
 
         try 
         {
