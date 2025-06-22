@@ -174,8 +174,6 @@ public class main
     {
         int choice;
 
-        try 
-        {
             System.out.print("\n========== ADMIN LOGIN ========== --\nEnter Email: ");
             String email = scanner.nextLine();
             System.out.print("Enter Password: ");
@@ -237,10 +235,6 @@ public class main
                         System.out.println("Invalid choice.");
                 }
             } while (choice != 5);
-
-        } catch (InvalidLogin e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     public static void customerDashboard(Scanner scanner, Customer customer) 

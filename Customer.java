@@ -35,7 +35,7 @@ public class Customer extends User
         totalCustomer++;
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersCust.txt", true))) 
         {
-        bw.write("[" + x + "] " + "|" + name + "|" + email + "|" + password + "|" + phoneNo "|" + vehicle.getPlateNum() + "|" + vehicle.getVehicleType());
+        bw.write("[" + totalCustomer + "] " + "|" + getName() + "|" + getEmail() + "|" + getPassword() + "|" + phoneNo + "|" + vehicle.getPlateNumber() + "|" + vehicle.getVehicleType());
         bw.newLine();
         } 
         catch (IOException e) 

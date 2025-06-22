@@ -19,7 +19,7 @@ public class Admin extends User
         totalAdmin++;
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersAdmin.txt", true))) 
         {
-        bw.write("[" + x + "] " + "|" + name + "|" + email + "|" + password);
+        bw.write("[" + totalAdmin + "] " + "|" + getName() + "|" + getEmail() + "|" + getPassword());
         bw.newLine();
         } 
         catch (IOException e) 

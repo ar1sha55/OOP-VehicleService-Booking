@@ -1,7 +1,7 @@
 import java.io.*;
 //import java.time.LocalDate;
 
-public class reportGenerator {
+public class ReportGenerator {
 
 
     public void generate(){
