@@ -15,6 +15,7 @@ public class main
         int mainChoice;
 
         do 
+        
         {
             System.out.println("========== VEHICLE SERVICE BOOKING SYSTEM ==========");
             System.out.println("[1] Customer");
