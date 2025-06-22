@@ -75,7 +75,7 @@ public class Customer extends User
                     this.setEmail(fileEmail);
                     this.setPassword(filePassword);
                     this.setPhoneNo(filePhoneNo);
-                    this.setVehicle(vehicle);  // 
+                    this.setVehicle(vehicle);  
                     found = true;
                     break;
                 }
@@ -91,7 +91,7 @@ public class Customer extends User
         } 
         catch (IOException e) 
         {
-        System.out.println("Error reading users.txt: " + e.getMessage());
+        System.out.println("Error reading usersCust.txt: " + e.getMessage());
         }
     }
 
