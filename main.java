@@ -1,5 +1,6 @@
-import java.util.*; //tukar ni je from Scanner to *
+import java.util.*;
 import java.io.*;
+import java.time.LocalTime;
 
 public class main 
 {
@@ -83,9 +84,9 @@ public class main
                     String vehicleNo = scanner.nextLine();
 
                     
-                    Vehicle newVehicle = new Vehicle(vehicleNo, vehicleType);
-                    Customer newCustomer = new Customer(newId, newName, newEmail, newPassword, newVehicle);
-                    newCustomer.register();
+                    //Vehicle newVehicle = new Vehicle(vehicleNo, vehicleType);
+                    //Customer newCustomer = new Customer(newId, newName, newEmail, newPassword, newVehicle);
+                    //newCustomer.register();
                     clearScreen();
                     System.out.println("\nYou registered successfully. Please login again. :)\n");
                     break;
@@ -197,8 +198,76 @@ public class main
                 break;
 
             case 2:
-                //book service
-                break;
+                System.out.println("\nWhich service would you like to book?");
+                System.out.println("[1] Maintenance Service");
+                System.out.println("[2] Cleaning Service");
+                System.out.println("[3] Inspection Service");
+                System.out.print("Enter your choice: ");
+                int serviceChoice = scanner.nextInt();
+                scanner.nextLine();
+
+                if(!Booking.hasAvailableSlots()) {
+                    System.out.println("Sorry! No available slots today :(");
+                    break;
+                }
+
+                Booking.showAvailableSlots();
+                System.out.print("Choose a time slot (enter index): ");
+                int slotChoice = scanner.nextInt();
+                scanner.nextLine();
+
+                LocalTime time;
+
+                try {
+                    time = Booking.bookSlot(slotChoice);
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    break;
+                }
+
+                //Vehicle custVehicle = customer.getVehicle(); tunggu vehicle class
+
+                /*switch (serviceChoice) {
+                case 1: // Maintenance
+                    System.out.println("\n-- MAINTENANCE SERVICE BOOKING --");
+                    System.out.print("Enter maintenance type (e.g. Oil Change): ");
+                    String type = scanner.nextLine();
+                    System.out.print("Enter current odometer reading: ");
+                    int odo = scanner.nextInt();
+                    scanner.nextLine();
+
+                    MaintenanceBooking mb = new MaintenanceBooking(customer, customerVehicle, date, time, type, odo);
+                    mb.printDetails();
+                    Booking.allBookings.add(mb);
+                    Booking.saveToFile();
+                    break;
+
+                case 2: // Cleaning
+                    System.out.println("\n-- CLEANING SERVICE BOOKING --");
+                    CleaningPackage.showAllPackages();
+                    
+                    System.out.print("Enter package choice [1-" + CleaningPackage.values().length + "]: ");
+                    int pkgChoice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    try {
+                        CleaningPackage selectedPkg = CleaningPackage.fromIndex(pkgChoice);
+                        CleaningBooking cb = new CleaningBooking(customer, customer.getVehicle(), date, time, selectedPkg);
+                        cb.printDetails();
+                        Booking.allBookings.add(cb);
+                        Booking.saveToFile();
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+
+                case 3: // Inspection
+                    System.out.println("\n-- INSPECTION SERVICE BOOKING --");
+                    InspectionBooking ib = new InspectionBooking(customer, customerVehicle, date, time);
+                    ib.printDetails();
+                    Booking.allBookings.add(ib);
+                    Booking.saveBookingsToFile();
+                    break; */
 
             case 3:
                 clearScreen();
