@@ -2,7 +2,10 @@ import java.util.*;
 
 class Vehicle{
     private String plateNum;
-    private int lastServiceOdometer;
+    private int lastServiceOdometerType1;
+    private int lastServiceOdometerType2;
+    private int lastServiceOdometerType3;
+    private int lastServiceOdometerType4;
     private int currentOdometer;
     private String vehicleType; //sedan,suv,mpv
     private String colour;
@@ -10,9 +13,12 @@ class Vehicle{
     private String model;
 
     //Constructor
-    public Vehicle(String pN, int lSodo, int cOdo, String vType, String c, String b, String m){
+    public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, String vType, String c, String b, String m){
         plateNum = pN;
-        lastServiceOdometer = lSodo;
+        lastServiceOdometerType1 = lSodo1;
+        lastServiceOdometerType2 = lSodo2;
+        lastServiceOdometerType3 = lSodo3;
+        lastServiceOdometerType4 = lSodo4;
         currentOdometer = cOdo;
         vehicleType = vType;
         colour = c;
@@ -22,7 +28,10 @@ class Vehicle{
 
     //Accessor
     public String getPlateNum () {return plateNum;}
-    public int getlastServiceOdometer () {return lastServiceOdometer;}
+    public int getlastServiceOdometerType1 () {return lastServiceOdometerType1;}
+    public int getlastServiceOdometerType2 () {return lastServiceOdometerType2;}
+    public int getlastServiceOdometerType3 () {return lastServiceOdometerType3;}
+    public int getlastServiceOdometerType4 () {return lastServiceOdometerType4;}
     public int getCurrentOdometer () {return currentOdometer;}
     public String getVehicleType () {return vehicleType;}
     public String getColour () {return colour;}
@@ -31,7 +40,10 @@ class Vehicle{
 
     //Setter
     public void setPlateNum (String plateNum) {this.plateNum = plateNum;}
-    public void setlastServiceOdometer (int lastServiceOdometer) {this.lastServiceOdometer = lastServiceOdometer;}
+    public void setlastServiceOdometerType1 (int lastServiceOdometerType1) {this.lastServiceOdometerType1 = lastServiceOdometerType1;}
+    public void setlastServiceOdometerType2 (int lastServiceOdometerType2) {this.lastServiceOdometerType2 = lastServiceOdometerType2;}
+    public void setlastServiceOdometerType3 (int lastServiceOdometerType3) {this.lastServiceOdometerType3 = lastServiceOdometerType3;}
+    public void setlastServiceOdometerType4 (int lastServiceOdometerType4) {this.lastServiceOdometerType4 = lastServiceOdometerType4;}
     public void setCurrentOdometer (int currentOdometer) {this.currentOdometer = currentOdometer;}
     public void setVehicleType (String vehicleType) {this.vehicleType = vehicleType;}
     public void setColour (String colour) {this.colour = colour;}
@@ -51,22 +63,82 @@ class Vehicle{
 
     //Service reminder based on odometer
     public ArrayList<String> serviceReminder(){
-        ArrayList<String> services = new ArrayList<>();
+        ArrayList<String> reminder = new ArrayList<>();
+
             switch (vehicleType.toUpperCase()){
                 case "SEDAN":
-                    if ((currentOdometer-lastServiceOdometer) >= 5000) {
-                        services.add("Preventative Maintenance & Oil Change ");
+                    if ((lastServiceOdometerType1 + 5000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType1 + 5000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
                     }
-                    if ((currentOdometer-lastServiceOdometer) >= 10000) {
-                        services.add("Tire Rotation (every 6 months / 10,000km)");
-                    }
-                    if ((currentOdometer-lastServiceOdometer) >= 20000) {
-                        services.add("Wheel Balancing, Brake Inspection, and Alignment Check (every 12 months / 20,000km)");
-                    }
-                    if ((currentOdometer-lastServiceOdometer) >= 40000) {
-                        services.add("Cooling System Check, Engine Service, and Transmission Inspection (every 24 months / 40,000km)");
-                    }
-            }
-    }
+                    else {reminder.add("Need Preventative Maintenance & Oil Change, Set Up a service appointment as soon as possible");}
 
+                    if ((lastServiceOdometerType2 + 10000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType2 + 10000) - currentOdometer) + "KM left for Tire Rotation");
+                    }
+                    else {reminder.add("Need Tire Rotation, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType3 + 20000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType3 + 20000) - currentOdometer) + "KM left for Wheel Balancing, Brake Inspection, and Alignment Check");
+                    }
+                    else {reminder.add("Need Wheel Balancing, Brake Inspection, and Alignment Check, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType4 + 40000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType4 + 40000) - currentOdometer) + "KM left for Cooling System, Engine, and Transmission Check");
+                    }
+                    else {reminder.add("Need Cooling System, Engine, and Transmission Check, Set Up a service appointment as soon as possible");}
+
+                    break;
+
+                    case "SUV":
+                    if ((lastServiceOdometerType1 + 7000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType1 + 7000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
+                    }
+                    else {reminder.add("Need Preventative Maintenance & Oil Change, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType2 + 12500) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType2 + 12500) - currentOdometer) + "KM left for Tire Rotation");
+                    }
+                    else {reminder.add("Need Tire Rotation, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType3 + 25000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType3 + 25000) - currentOdometer) + "KM left for Wheel Balancing, Brake Inspection, and Alignment Check");
+                    }
+                    else {reminder.add("Need Wheel Balancing, Brake Inspection, and Alignment Check, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType4 + 45000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType4 + 45000) - currentOdometer) + "KM left for Cooling System, Engine, and Transmission Check");
+                    }
+                    else {reminder.add("Need Cooling System, Engine, and Transmission Check, Set Up a service appointment as soon as possible");}
+
+                    break;
+
+                    case "MPV":
+                    if ((lastServiceOdometerType1 + 10000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType1 + 10000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
+                    }
+                    else {reminder.add("Need Preventative Maintenance & Oil Change, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType2 + 15000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType2 + 15000) - currentOdometer) + "KM left for Tire Rotation");
+                    }
+                    else {reminder.add("Need Tire Rotation, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType3 + 30000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType3 + 30000) - currentOdometer) + "KM left for Wheel Balancing, Brake Inspection, and Alignment Check");
+                    }
+                    else {reminder.add("Need Wheel Balancing, Brake Inspection, and Alignment Check, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType4 + 50000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType4 + 50000) - currentOdometer) + "KM left for Cooling System, Engine, and Transmission Check");
+                    }
+                    else {reminder.add("Need Cooling System, Engine, and Transmission Check, Set Up a service appointment as soon as possible");}
+
+                    break;
+
+                default:
+                    reminder.add("Please consult a technician");
+                    break;
+                }
+        return reminder;
+    }
 }
