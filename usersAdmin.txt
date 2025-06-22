@@ -1,0 +1,3 @@
+Nur Zahirah|zahirah@gmail.com|admin123
+Evelyn Ang|evelyn@example.com|admin456
+Aron Aziz|aron@example.com|admin789
