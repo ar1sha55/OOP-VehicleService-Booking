@@ -1,15 +1,17 @@
 import java.time.*; //for booking slots
 import java.util.*;
+import java.io.*;
 
 abstract class Booking implements BookingInterface {
     protected int bookingID; //use protected so accessible within package and all subclasses
-    protected Customer customer;
+    protected Customer customer; 
     protected Vehicle vehicle;
     protected LocalDate bookingDate;
     protected LocalTime bookingTime;
     protected String status;
 
-    protected static ArrayList<LocalTime> availableSlots = new ArrayList<>();    
+    protected static ArrayList<LocalTime> availableSlots = new ArrayList<>();   
+    protected static ArrayList<Booking> bookingList = new ArrayList<>(); 
     
     static {
         for(int i = 9; i < 18; i++) { //kedai bukak from 0900 - 1700
@@ -56,6 +58,58 @@ abstract class Booking implements BookingInterface {
         }
 
         return availableSlots.remove(i);
+    }
+
+    public static void saveToFile() {
+        try {
+            PrintWriter mWriter = new PrintWriter(new FileWriter("maintenance_bookings.txt")); //FileWriter to append, prevent overwrite
+            PrintWriter cWriter = new PrintWriter(new FileWriter("cleaning_bookings.txt")); //FileWriter to append, prevent overwrite
+            PrintWriter iWriter = new PrintWriter(new FileWriter("inspection_bookings.txt")); //FileWriter to append, prevent overwrite
+
+            for(Booking b : bookingList) {
+                PrintWriter wr = null;
+
+                if(b instanceof MaintenanceBooking) {
+                    wr = mWriter;
+                } else if (b instanceof CleaningBooking) {
+                    wr = cWriter;
+                } else if (b instanceof InspectionBooking) {
+                    wr = iWriter;
+                }
+
+                if(wr != null) {
+                    wr.println(b.getBookingID());
+                    wr.println(b.customer.getName());
+                    //wr.println(mb.vehicle.getPlateNumber()); tunggu vehicle class
+                    wr.println(b.getBookingDate());
+                    wr.println(b.getBookingTime());
+                    wr.println(b.getStatus());
+
+                    if (b instanceof MaintenanceBooking mb) {
+                        wr.println(mb.getServiceType());
+                        wr.println(mb.getOdometer());
+                        for (String s : mb.getRecommendService()) {
+                            wr.println(s);
+                        }
+                    }
+
+                    if (b instanceof CleaningBooking cb) {
+                        wr.println(cb.getSelectedPkg().getName());
+                        wr.println(cb.getSelectedPkg().getDescription());
+                        wr.println(cb.getSelectedPkg().getPrice());
+                    }
+
+                    wr.println(); //line between bookings
+                }
+            }
+
+            mWriter.close();
+            cWriter.close();
+            iWriter.close();
+            
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
 }
