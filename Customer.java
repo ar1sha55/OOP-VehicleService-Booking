@@ -1,3 +1,6 @@
+import java.util.*;
+import java.io.*;
+
 public class Customer extends User 
 {
     private static int totalCustomer=0;
@@ -8,7 +11,7 @@ public class Customer extends User
     {
         super(id, name, email, password); 
         this.vehicle = vehicle;
-        this.bookings = new Vector<>();
+        //this.bookings = new Vector<>();
     }
 
     public Customer() 
@@ -59,8 +62,6 @@ public class Customer extends User
             }
         }
 
-
-
         if (!found) 
         {
             throw new InvalidLogin("Login failed. Invalid email or password.");
@@ -73,8 +74,6 @@ public class Customer extends User
         System.out.println("Error reading users.txt: " + e.getMessage());
         }
     }
-
-
 
     @Override
     public void showRole() 
@@ -93,4 +92,13 @@ public class Customer extends User
             System.out.println("No vehicle registered.");
         }
     }
-} //nak tengok sync tak
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+}
