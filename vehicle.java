@@ -14,16 +14,16 @@ class Vehicle{
 
     //Constructor
     public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, String vType, String c, String b, String m){
-        plateNum = pN;
+        plateNum = pN.toUpperCase();
         lastServiceOdometerType1 = lSodo1;
         lastServiceOdometerType2 = lSodo2;
         lastServiceOdometerType3 = lSodo3;
         lastServiceOdometerType4 = lSodo4;
         currentOdometer = cOdo;
-        vehicleType = vType;
-        colour = c;
-        brand = b;
-        model = m;
+        vehicleType = vType.toUpperCase();
+        colour = c.toUpperCase();
+        brand = b.toUpperCase();
+        model = m.toUpperCase();
     }
 
     //Accessor
@@ -59,7 +59,6 @@ class Vehicle{
             System.out.println("Latest odometer reading must be higher than current odometer reading");
         }
     }
-
 
     //Service reminder based on odometer
     public ArrayList<String> serviceReminder(){
