@@ -33,7 +33,15 @@ public class Customer extends User
     public void register() 
     {   
         totalCustomer++;
-        saveToFile(totalCustomer);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersCust.txt", true))) 
+        {
+        bw.write("[" + x + "] " + "|" + name + "|" + email + "|" + password + "|" + phoneNo "|" + vehicle.getPlateNum() + "|" + vehicle.getVehicleType());
+        bw.newLine();
+        } 
+        catch (IOException e) 
+        {
+        System.out.println("Error writing to file.");
+        }
     }
 
         
@@ -52,10 +60,14 @@ public class Customer extends User
             String[] parts = cleanLine.split("\\|");
             if (parts.length >= 4) 
             {
-                String fileName = parts[1];
-                String fileEmail = parts[2];
-                String filePassword = parts[3];
-                String filePhoneNo = parts[4]
+                String fileName = parts[0];
+                String fileEmail = parts[1];
+                String filePassword = parts[2];
+                String filePhoneNo = parts[3];
+                String plateNum     = parts[4];
+                String vehicleType  = parts[5];
+
+                Vehicle vehicle = new Vehicle(plateNum, vehicleType);
 
                 if (fileEmail.equals(email) && filePassword.equals(password)) 
                 {
@@ -63,6 +75,7 @@ public class Customer extends User
                     this.setEmail(fileEmail);
                     this.setPassword(filePassword);
                     this.setPhoneNo(filePhoneNo);
+                    this.setVehicle(vehicle);  // 
                     found = true;
                     break;
                 }

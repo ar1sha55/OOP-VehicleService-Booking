@@ -14,11 +14,7 @@ public class main
     public static void main(String[] args) 
     {
         Scanner scanner = new Scanner(System.in);
-        int mainChoice;
-
-        Admin admin1 = new Admin("Nur Zahirah", "zahirah@gmail.com", "admin123");
-        Admin admin2 = new Admin("Evelyn Ang", "evelyn@example.com", "admin456");
-        Admin admin3 = new Admin("Aron Aziz", "aron@example.com", "admin789");       
+        int mainChoice;     
                  
                  
         do 
@@ -127,21 +123,77 @@ public class main
         } while (choice != 3);
     }
 
+    public static void viewAllCustomers() 
+    {
+    File file = new File("usersCust.txt");
+
+    if (!file.exists()) 
+    {
+        System.out.println("No customers found.");
+        return;
+    }
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) 
+    {
+        String line;
+        int count = 1;
+
+        System.out.println("======== REGISTERED CUSTOMERS ========");
+
+        while ((line = reader.readLine()) != null) 
+        {
+            line = line.replaceAll("\\[\\d+\\]\\s*\\|?", "");
+            String[] parts = line.split("\\|");
+
+            if (parts.length >= 6) {
+                String name = parts[0];
+                String email = parts[1];
+                String password = parts[2]; 
+                String phone = parts[3];
+                String plate = parts[4];
+                String type = parts[5];
+
+                System.out.println("Customer #" + count++);
+                System.out.println("  Name     : " + name);
+                System.out.println("  Email    : " + email);
+                System.out.println("  Phone No : " + phone);
+                System.out.println("  Vehicle  : " + type + " (Plate: " + plate + ")");
+                System.out.println("--------------------------------------");
+            }
+        }
+    } 
+    catch (IOException e) 
+    {
+        System.out.println("Error reading customers: " + e.getMessage());
+    }
+}
+
+
+
     public static void AdminMenu(Scanner scanner) 
     {
         int choice;
 
         try 
         {
-            System.out.print("\n-- ADMIN LOGIN --\nEnter Email: ");
+            System.out.print("\n========== ADMIN LOGIN ========== --\nEnter Email: ");
             String email = scanner.nextLine();
             System.out.print("Enter Password: ");
             String password = scanner.nextLine();
-            admin.login(email, password);
+            Admin admin = new Admin();
+
+            try
+            {
+                admin.login(email, password);
+            }
+            catch (InvalidLogin e)
+            {
+                System.out.println(e.getMessage());
+            }
 
             do 
             {
-                System.out.println("\n-- ADMIN MENU --");
+                System.out.println("\n========== ADMIN MENU ==========");
                 System.out.println("[1] View Bookings");
                 System.out.println("[2] View Customers");
                 System.out.println("[3] Generate Report");
@@ -166,7 +218,7 @@ public class main
 
                         break;
                     case 2:
-                        System.out.println("======= CUSTOMERS =======");
+                        viewAllCustomers();
                         break;
 
                     case 3:
@@ -202,7 +254,7 @@ public class main
             System.out.println("[3] Logout");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine(); 
 
             switch (choice) 
             {

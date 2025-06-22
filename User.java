@@ -29,16 +29,5 @@ public abstract class User implements InterfaceUser
 
   public abstract void showRole();
 
-  public void saveToFile(int x) 
-  {
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersCust.txt", true))) 
-    {
-      bw.write("[" + x + "] " + "|" + name + "|" + email + "|" + password);
-      bw.newLine();
-    } 
-    catch (IOException e) 
-    {
-      System.out.println("Error writing to file.");
-    }
-  }
+ 
 }

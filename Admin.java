@@ -1,6 +1,6 @@
 public class Admin extends User 
 {
-    private static int totalAdmin = 0;
+    private static int totalAdmin = 3;
     //private ReportGenerator report = new ReportGenerator(); 
 
     public Admin(String name, String email, String password) 
@@ -8,23 +8,68 @@ public class Admin extends User
         super(name, email, password);
     }
 
+    public Admin() 
+    {
+    super("", "", "");  
+    }
+
     @Override
     public void register() 
     {
         totalAdmin++;
-        saveToFile(totalAdmin);
-        System.out.println("Admin registered successfully.");
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersAdmin.txt", true))) 
+        {
+        bw.write("[" + x + "] " + "|" + name + "|" + email + "|" + password);
+        bw.newLine();
+        } 
+        catch (IOException e) 
+        {
+        System.out.println("Error writing to file.");
+        }
     }
 
-    @Override
+@Override
     public void login(String email, String password) throws InvalidLogin 
     {
-        if (!getEmail().equals(email) || !getPassword().equals(password)) 
+        try (BufferedReader reader = new BufferedReader(new FileReader("usersAdmin.txt"))) 
         {
-            throw new InvalidLogin("Login failed for admin.");
+        String line;
+        boolean found = false;
+
+        while ((line = reader.readLine()) != null) 
+        {
+            String[] parts = line.split("\\|");
+
+            if (parts.length >= 3) 
+            {
+                String fileName = parts[0];
+                String fileEmail = parts[1];
+                String filePassword = parts[2];
+
+                if (fileEmail.equals(email) && filePassword.equals(password)) 
+                {
+                    this.setName(fileName);
+                    this.setEmail(fileEmail);
+                    this.setPassword(filePassword);
+                    found = true;
+                    break;
+                }
+            }
         }
-        System.out.println("Admin logged in.");
+
+        if (!found) 
+        {
+            throw new InvalidLogin("Admin login failed: Invalid email or password.");
+        }
+
+        System.out.println("Admin logged in successfully. Welcome, " + getName() + "!");
+        } 
+        catch (IOException e) 
+        {
+        System.out.println("Error reading usersAdmin.txt: " + e.getMessage());
+        }
     }
+
 
     @Override
     public void showRole() 
