@@ -35,7 +35,7 @@ public class Customer extends User
         totalCustomer++;
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersCust.txt", true))) 
         {
-        bw.write("[" + totalCustomer + "] " + "|" + getName() + "|" + getEmail() + "|" + getPassword() + "|" + phoneNo + "|" + vehicle.getPlateNumber() + "|" + vehicle.getVehicleType());
+        bw.write("[" + totalCustomer + "] " + getName() + "|" + getEmail() + "|" + getPassword() + "|" + phoneNo + "|" + vehicle.getPlateNumber() + "|" + vehicle.getVehicleType());
         bw.newLine();
         } 
         catch (IOException e) 
@@ -55,10 +55,10 @@ public class Customer extends User
 
         while ((line = reader.readLine()) != null) 
         {
-            String cleanLine = line.replaceAll("\\[\\d+\\]", "");
+            String cleanLine = line.replaceAll("\\[\\d+\\]s*", "");
 
             String[] parts = cleanLine.split("\\|");
-            if (parts.length >= 4) 
+            if (parts.length >= 6) 
             {
                 String fileName = parts[0];
                 String fileEmail = parts[1];
