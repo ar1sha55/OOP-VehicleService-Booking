@@ -1,5 +1,6 @@
 import java.util.*;
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class main 
@@ -16,7 +17,6 @@ public class main
         int mainChoice;
 
         do 
-        
         {
             System.out.println("========== VEHICLE SERVICE BOOKING SYSTEM ==========");
             System.out.println("[1] Customer");
@@ -149,9 +149,18 @@ public class main
 
                 switch (choice) {
                     case 1:
-                        //bookings
-                        break;
+                        System.out.println("\n======= ALL BOOKINGS =======");
 
+                        System.out.println("\n--- MAINTENANCE BOOKINGS ---");
+                        displayBookings("maintenance_bookings.txt");
+
+                        System.out.println("\n--- CLEANING BOOKINGS ---");
+                        displayBookings("cleaning_bookings.txt");
+
+                        System.out.println("\n--- INSPECTION BOOKINGS ---");
+                        displayBookings("inspection_bookings.txt");
+
+                        break;
                     case 2:
                         System.out.println("======= CUSTOMERS =======");
                         break;
@@ -206,6 +215,9 @@ public class main
                 int serviceChoice = scanner.nextInt();
                 scanner.nextLine();
 
+                System.out.print("Enter booking date (YYYY-MM-DD): ");
+                LocalDate date = LocalDate.parse(scanner.nextLine());
+
                 if(!Booking.hasAvailableSlots()) {
                     System.out.println("Sorry! No available slots today :(");
                     break;
@@ -225,9 +237,9 @@ public class main
                     break;
                 }
 
-                //Vehicle custVehicle = customer.getVehicle(); tunggu vehicle class
+                Vehicle custVehicle = customer.getVehicle();
 
-                /*switch (serviceChoice) {
+                switch (serviceChoice) {
                 case 1: // Maintenance
                     System.out.println("\n-- MAINTENANCE SERVICE BOOKING --");
                     System.out.print("Enter maintenance type (e.g. Oil Change): ");
@@ -236,9 +248,9 @@ public class main
                     int odo = scanner.nextInt();
                     scanner.nextLine();
 
-                    MaintenanceBooking mb = new MaintenanceBooking(customer, customerVehicle, date, time, type, odo);
+                    MaintenanceBooking mb = new MaintenanceBooking(customer, custVehicle, date, time, type, odo);
                     mb.printDetails();
-                    Booking.allBookings.add(mb);
+                    Booking.bookingList.add(mb);
                     Booking.saveToFile();
                     break;
 
@@ -252,9 +264,9 @@ public class main
 
                     try {
                         CleaningPackage selectedPkg = CleaningPackage.fromIndex(pkgChoice);
-                        CleaningBooking cb = new CleaningBooking(customer, customer.getVehicle(), date, time, selectedPkg);
+                        CleaningBooking cb = new CleaningBooking(customer, custVehicle, date, time, selectedPkg);
                         cb.printDetails();
-                        Booking.allBookings.add(cb);
+                        Booking.bookingList.add(cb);
                         Booking.saveToFile();
                     } catch (IllegalArgumentException e) {
                         System.out.println(e.getMessage());
@@ -263,11 +275,12 @@ public class main
 
                 case 3: // Inspection
                     System.out.println("\n-- INSPECTION SERVICE BOOKING --");
-                    InspectionBooking ib = new InspectionBooking(customer, customerVehicle, date, time);
+                    InspectionBooking ib = new InspectionBooking(customer, custVehicle, date, time);
                     ib.printDetails();
-                    Booking.allBookings.add(ib);
-                    Booking.saveBookingsToFile();
-                    break; */
+                    Booking.bookingList.add(ib);
+                    Booking.saveToFile();
+                    break; 
+                }
 
             case 3:
                 clearScreen();
@@ -279,5 +292,35 @@ public class main
         }
     } while (choice != 3);
     }
+
+    public static void displayBookings(String filename) { //kena check lagi nanti
+        File file = new File(filename);
+        if (!file.exists()) {
+            System.out.println("No bookings found in " + filename);
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            int bookingNum = 1;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue; // skip blank lines
+
+                System.out.println("Booking #" + bookingNum++);
+                System.out.println("Booking ID : " + line);
+                System.out.println("Customer   : " + reader.readLine());
+                System.out.println("Vehicle No : " + reader.readLine());
+                System.out.println("Date       : " + reader.readLine());
+                System.out.println("Time       : " + reader.readLine());
+                System.out.println("Status     : " + reader.readLine());
+                System.out.println();
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error reading " + filename + ": " + e.getMessage());
+        }
+    }
+
 
 }
