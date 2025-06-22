@@ -23,4 +23,6 @@ class CleaningBooking extends Booking {
         System.out.println("Booking Time: " + bookingTime);
         System.out.println("Status: " + status);   
     }
+
+    public CleaningPackage getSelectedPkg() {return selectedPkg;}
 }
