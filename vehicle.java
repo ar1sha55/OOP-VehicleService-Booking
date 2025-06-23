@@ -1,6 +1,6 @@
 import java.util.*;
 
-enum vehicleType {
+enum VehicleType {
     SEDAN, SUV, MPV
 }
 
@@ -11,13 +11,13 @@ public class Vehicle{
     private int lastServiceOdometerType3;
     private int lastServiceOdometerType4;
     private int currentOdometer;
-    private vehicleType vehicleType; //sedan,suv,mpv
+    private VehicleType vehicleType; //sedan,suv,mpv
     private String colour;
     private String brand;
     private String model;
 
     //Constructor
-    public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, vehicleType vType, String c, String b, String m){
+    public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, VehicleType vType, String c, String b, String m){
         plateNum = pN.toUpperCase();
         lastServiceOdometerType1 = lSodo1;
         lastServiceOdometerType2 = lSodo2;
@@ -37,7 +37,7 @@ public class Vehicle{
     public int getlastServiceOdometerType3 () {return lastServiceOdometerType3;}
     public int getlastServiceOdometerType4 () {return lastServiceOdometerType4;}
     public int getCurrentOdometer () {return currentOdometer;}
-    public vehicleType getVehicleType () {return vehicleType;}
+    public VehicleType getVehicleType () {return vehicleType;}
     public String getColour () {return colour;}
     public String getBrand () {return brand;}
     public String getModel() {return model;}
@@ -49,7 +49,7 @@ public class Vehicle{
     public void setlastServiceOdometerType3 (int lastServiceOdometerType3) {this.lastServiceOdometerType3 = lastServiceOdometerType3;}
     public void setlastServiceOdometerType4 (int lastServiceOdometerType4) {this.lastServiceOdometerType4 = lastServiceOdometerType4;}
     public void setCurrentOdometer (int currentOdometer) {this.currentOdometer = currentOdometer;}
-    public void setVehicleType (vehicleType vehicleType) {this.vehicleType = vehicleType;}
+    public void setVehicleType (VehicleType vehicleType) {this.vehicleType = vehicleType;}
     public void setColour (String colour) {this.colour = colour;}
     public void setBrand (String brand) {this.brand = brand;}
     public void setModel(String model) {this.model = model;}
