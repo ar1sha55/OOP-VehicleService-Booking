@@ -1419,7 +1419,6 @@ public class projekOOP
                     System.out.println("\n==============================");
                     System.out.println("Date       : " + b.getBookingDate());
                     System.out.println("Time       : " + b.getBookingTime());
-                    System.out.println("Status     : " + b.getStatus());
 
                     if (b instanceof MaintenanceBooking) {
                         System.out.println("Service    : Maintenance");
@@ -1430,6 +1429,8 @@ public class projekOOP
                     } else if (b instanceof InspectionBooking) {
                         System.out.println("Service    : Inspection");
                     }
+
+                    System.out.println("\nStatus     : " + b.getStatus());
                 }
             }
 
