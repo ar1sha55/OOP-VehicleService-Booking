@@ -66,9 +66,9 @@ public class Customer extends User
                 String filePhoneNo = parts[3];
                 String plateNum     = parts[4];
                 String vehicleType  = parts[5];
-                String odometer = parts[6];
-
-                Vehicle vehicle = new Vehicle(plateNum, vehicleType,odometer);
+                int odometer = Integer.parseInt(parts[6]);
+                VehicleType vType = VehicleType.valueOf(vehicleType.toUpperCase()); // ✅ convert string to enum
+                Vehicle vehicle = new Vehicle(vType, plateNum, odometer);
 
                 if (fileEmail.equals(email) && filePassword.equals(password)) 
                 {
@@ -121,5 +121,4 @@ public class Customer extends User
     public void setVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
     }
-
 }
