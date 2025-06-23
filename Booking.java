@@ -31,11 +31,11 @@ abstract class Booking implements BookingInterface {
     public abstract void printDetails();
 
     @Override
-    public void confirmBooking() {this.status = "Confirmed";}
+    public void confirmBooking() {this.status.confirmedStatus();}
 
     @Override
     public void cancelBooking() {
-        this.status = "Cancelled";
+        this.status.cancelledStatus();
         availableSlots.add(bookingTime);
     }
 
