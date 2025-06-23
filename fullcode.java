@@ -1006,17 +1006,28 @@ public class projekOOP
     public static void main(String[] args) 
     {
         Scanner scanner = new Scanner(System.in);
-        int mainChoice;     
-                 
-                 
+        int mainChoice = -1;        
+        
         do 
         {
             System.out.println("========== VEHICLE SERVICE BOOKING SYSTEM ==========");
             System.out.println("[1] Customer");
             System.out.println("[2] Admin");
             System.out.println("[3] Exit");
-            System.out.print("Enter your choice: ");
-            mainChoice = scanner.nextInt();
+
+            boolean validInput = false;
+            while (!validInput){
+                System.out.print("Enter your choice: ");
+                try {
+                    mainChoice = scanner.nextInt();
+                    validInput = true;
+                } catch (InputMismatchException e) {
+                    System.out.println("====================================================");
+                    System.out.println("Invalid input. Please choose 1-3 only!");
+                    scanner.nextLine();
+                }    
+            }
+            
             System.out.println("====================================================");
             scanner.nextLine(); 
             clearScreen();
@@ -1043,7 +1054,6 @@ public class projekOOP
 
         } while (mainChoice != 3);
     }
-
     public static void CustomerMenu(Scanner scanner) 
     {
         int choice;
