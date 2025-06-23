@@ -147,18 +147,22 @@ public class Vehicle{
 
     //Display owned vehicle information
     public void displayInfo(){
-        System.out.println("-------------- Vehicle Info --------------");
+        System.out.println("\n-------------- Vehicle Info --------------");
         System.out.println("Plate Number: " + plateNum);
         System.out.println("Brand: " + brand);
         System.out.println("Model: " + model);
         System.out.println("Colour: " + colour);
         System.out.println("Vehicle Type: " + vehicleType);
         System.out.println("Current Odometer: " + currentOdometer);
-        System.out.println("-- Last Service Odometer Info --");
+        System.out.println("\n-- Last Service Odometer Info --");
         System.out.println("Preventative Maintenance & Oil Change: " + lastServiceOdometerType1);
         System.out.println("Tire Rotation: " + lastServiceOdometerType2);
         System.out.println("Wheel Balancing, Brake Inspection, and Alignment Check: " + lastServiceOdometerType3);
         System.out.println("Cooling System, Engine, and Transmission Check: " + lastServiceOdometerType4);
+        System.out.println("\n-- Upcoming Service Reminder --");
+        for (int i=0; i<serviceReminder().size(); i++){
+            System.out.println((i+1) + ". " + serviceReminder());
+        }
     }
 
     @Override
