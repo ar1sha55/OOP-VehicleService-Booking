@@ -4,7 +4,7 @@ enum VehicleType {
     SEDAN, SUV, MPV
 }
 
-public class Vehicle{
+class Vehicle{
     private String plateNum;
     private int lastServiceOdometerType1;
     private int lastServiceOdometerType2;
@@ -28,6 +28,12 @@ public class Vehicle{
         colour = c.toUpperCase();
         brand = b.toUpperCase();
         model = m.toUpperCase();
+    }
+
+    public Vehicle(VehicleType vType, String pN, int currentOdo){
+        plateNum = pN.toUpperCase();
+        vehicleType = vType;
+        currentOdometer = currentOdo;
     }
 
     //Accessor
