@@ -11,6 +11,18 @@ public class Service {
         description = desc;
     }
 
+    public Service(){
+        id=0;
+        name="";
+        description="";
+        sedanPrice=0;
+        suvPrice=0;
+        mpvPrice=0;
+        sedanDuration=0;
+        suvDuration=0;
+        mpvDuration=0;
+    }
+
     // Setter for different category
     public void setSedanDetails(double price, int duration){
         sedanPrice = price;
