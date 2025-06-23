@@ -5,17 +5,17 @@ enum bookingStatus {
 
 class Status {
     private bookingStatus currentStatus;
-
+    //constructor, set new booking into pending
     public Status(){
         this.currentStatus = bookingStatus.PENDING;
     }
-
-    public Status(bookingStatus newStatus){
-        this.currentStatus = newStatus;
+    //set status to confirmed
+    public void confirmStatus(){
+        this.currentStatus = bookingStatus.CONFIRMED;
     }
-
-    public void setStatus(bookingStatus status){
-        this.currentStatus = status;
+    //set status to cancelled
+    public void cancelStatus(){
+        this.currentStatus = bookingStatus.CANCELLED;
     }
 
     public bookingStatus getStatus(){
