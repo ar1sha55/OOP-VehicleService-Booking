@@ -1,7 +1,8 @@
 public class Admin extends User 
 {
     private static int totalAdmin = 3;
-    //private ReportGenerator report = new ReportGenerator(); 
+    private ReportGenerator report = new ReportGenerator(); 
+    private Catalog catalog = new Catalog();
 
     public Admin(String name, String email, String password) 
     {
@@ -81,4 +82,61 @@ public class Admin extends User
     {
         report.generate();
     }
+
+    public void addServiceToCatalog(Catalog catalog) 
+    {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter service name:");
+        String name = sc.nextLine();
+    
+        System.out.println("Enter service description:");
+        String description = sc.nextLine();
+
+        System.out.println("Enter service ID:");
+        int id = Integer.parseInt(sc.nextLine());
+
+        Service newService = new Service(id, name, description);
+
+        System.out.println("Enter Sedan price and duration:");
+        newService.setSedanDetails(sc.nextDouble(), sc.nextInt());
+        sc.nextLine(); 
+
+        System.out.println("Enter SUV price and duration:");
+        newService.setSuvDetails(sc.nextDouble(), sc.nextInt());
+        sc.nextLine();
+
+        System.out.println("Enter MPV price and duration:");
+        newService.setMpvDetails(sc.nextDouble(), sc.nextInt());
+        sc.nextLine();
+
+        System.out.println("Choose category to add:\n1. General\n2. Maintenance\n3. Cleaning\n4. Inspection\n5. Cancel");
+        int choice = sc.nextInt();
+
+        switch (choice) 
+        {
+            case 1:
+                catalog.addGeneralService(newService);
+                System.out.println("Service added to General catalog.");
+                break;
+            case 2:
+                catalog.addMaintenanceService(newService);
+                System.out.println("Service added to Maintenance catalog.");
+                break;
+            case 3:
+                catalog.addCleaningService(newService);
+                System.out.println("Service added to Cleaning catalog.");
+                break;
+            case 4:
+                catalog.addInspectionService(newService);
+                System.out.println("Service added to Inspection catalog.");
+                break;
+            case 5:
+                System.out.println("Service discarded.");
+                break;
+            default:
+                System.out.println("Invalid choice. Discarding service.");
+        }
+    }
+
 }

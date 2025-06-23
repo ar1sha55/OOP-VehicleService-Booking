@@ -60,4 +60,53 @@ public class Catalog {
         i1.setSedanDetails(300, 80);
         servicesOfferedInspection.add(i1);
     }
+
+        public void addGeneralService(Service service) 
+        {
+            servicesOffered.add(service);
+        }
+
+        public void addMaintenanceService(Service service) 
+        {
+            servicesOfferedMaintenance.add(service);
+        }
+
+        public void addCleaningService(Service service) 
+        {
+            servicesOfferedCleaning.add(service);
+        }
+
+        public void addInspectionService(Service service) 
+        {
+            servicesOfferedInspection.add(service);
+        }
+
+        public void removeServiceFromGeneral(Service service) 
+        {
+            servicesOffered.remove(service);
+        }
+
+        public void viewAllServices() 
+        {
+            System.out.println("=== General Services ===");
+                for (Service s : servicesOffered) 
+                {
+                s.displayInfo(VehicleType.SEDAN); // or ask user for vehicle type
+                }
+            System.out.println("=== Maintenance Services ===");
+                for (Service s : servicesOfferedMaintenance) 
+                {
+                s.displayInfo(VehicleType.SEDAN);
+                }
+            System.out.println("=== Cleaning Services ===");
+                for (Service s : servicesOfferedCleaning) 
+                {
+                s.displayInfo(VehicleType.SEDAN);
+                }
+            System.out.println("=== Inspection Services ===");
+                for (Service s : servicesOfferedInspection)    
+                {
+                s.displayInfo(VehicleType.SEDAN);
+                }
+        }
 }

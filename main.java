@@ -173,6 +173,8 @@ public class main
     public static void AdminMenu(Scanner scanner) 
     {
         int choice;
+        Catalog catalog = new Catalog();
+
 
             System.out.print("\n========== ADMIN LOGIN ========== --\nEnter Email: ");
             String email = scanner.nextLine();
@@ -196,7 +198,8 @@ public class main
                 System.out.println("[2] View Customers");
                 System.out.println("[3] Generate Report");
                 System.out.println("[4] View Services Ordered");
-                System.out.println("[5] Back to Main Menu");
+                System.out.println("[5] Manage Catalog");
+                System.out.println("[6] Back to Main Menu");
                 System.out.print("Enter your choice: ");
                 choice = scanner.nextInt();
                 scanner.nextLine(); 
@@ -228,13 +231,44 @@ public class main
                         break;
 
                     case 5:
+                        boolean running = true;
+
+                        while (running) 
+                        {
+                        System.out.println("\n=== ADMIN PANEL ===");
+                        System.out.println("1. Add Service to Catalog");
+                        System.out.println("2. View Catalog");
+                        System.out.println("3. Exit");
+                        System.out.print("Enter choice: ");
+                        int choice = scanner.nextInt();
+                        scanner.nextLine(); 
+
+                        switch (choice) 
+                        {
+                        case 1:
+                            admin.addServiceToCatalog(catalog);
+                            break;
+                        case 2:
+                            catalog.viewAllServices();
+                            break;
+                        case 3:
+                            running = false;
+                            break;
+                        default:
+                            System.out.println("Invalid option.");
+                        }
+                        }
+                        System.out.println("Exiting admin panel.");
+                        
+                    case 6:
                         System.out.println("Returning to main menu...");
                         break;
 
                     default:
                         System.out.println("Invalid choice.");
                 }
-            } while (choice != 5);
+            } while (choice != 6);
+
     }
 
     public static void customerDashboard(Scanner scanner, Customer customer) 
