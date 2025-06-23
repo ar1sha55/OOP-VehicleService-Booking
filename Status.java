@@ -1,6 +1,6 @@
 
 enum bookingStatus {
-    PENDING, APPROVED, COMPLETED, CANCELLED
+    PENDING, CONFIRMED, CANCELLED
 }
 
 class Status {
