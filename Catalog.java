@@ -56,8 +56,8 @@ public class Catalog {
         //Inspection
         Service i1 = new Service(301, "Standard Inspection", "Includes brake system check, lights, tire tread, fluid levels, and battery health.");
         i1.setSedanDetails(100, 45);
-        i1.setSedanDetails(200, 60);
-        i1.setSedanDetails(300, 80);
+        i1.setSuvDetails(200, 60);
+        i1.setMpvDetails(300, 80);
         servicesOfferedInspection.add(i1);
     }
 
