@@ -455,9 +455,13 @@ class Vehicle{
         System.out.println("Tire Rotation: " + lastServiceOdometerType2);
         System.out.println("Wheel Balancing, Brake Inspection, and Alignment Check: " + lastServiceOdometerType3);
         System.out.println("Cooling System, Engine, and Transmission Check: " + lastServiceOdometerType4);
+    }
+
+    public void reminderDisplay(){
         System.out.println("\n-- Upcoming Service Reminder --");
-        for (int i=0; i<serviceReminder().size(); i++){
-            System.out.println((i+1) + ". " + serviceReminder());
+        ArrayList<String> reminders = serviceReminder();
+        for (int i = 0; i < reminders.size(); i++) {
+            System.out.println((i+1) + ". " + reminders.get(i));
         }
     }
 
@@ -466,8 +470,6 @@ class Vehicle{
         return "Vehicle (" + plateNum + ")" + brand + " - " + model + "(" + colour + ", " + vehicleType + ")";
     }
 }
-
-
 
 abstract class User implements InterfaceUser 
 {
@@ -662,21 +664,14 @@ class ReportGenerator {
 }
 
 class Catalog {
-    private ArrayList <Service> servicesOffered;
     private ArrayList <Service> servicesOfferedMaintenance;
     private ArrayList <Service> servicesOfferedCleaning;
     private ArrayList <Service> servicesOfferedInspection;
 
     public Catalog(){
-        servicesOffered = new ArrayList<>();
         servicesOfferedMaintenance = new ArrayList<>();
         servicesOfferedCleaning = new ArrayList<>();
         servicesOfferedInspection = new ArrayList<>();
-
-        //Add general service offered by the service center
-        servicesOffered.add(new Service(1, "Vehicle Maintenance", "Includes oil change, tire rotation, brake check, and engine tune-up to keep your car running smoothly."));
-        servicesOffered.add(new Service(2, "Vehicle Cleaning", "Interior and exterior cleaning with options for wash, vacuum, wax, and full detailing."));
-        servicesOffered.add(new Service(3, "Vehicle Inspection", "Covers safety and performance checks on brakes, tires, lights, and fluid levels."));
 
         //Maintenance
         Service m1 = new Service(101, "Preventative Maintenance & Oil Change", "Includes replacing engine oil and oil filter to ensure proper engine lubrication and prevent early engine wear.");
@@ -717,15 +712,11 @@ class Catalog {
         //Inspection
         Service i1 = new Service(301, "Standard Inspection", "Includes brake system check, lights, tire tread, fluid levels, and battery health.");
         i1.setSedanDetails(100, 45);
-        i1.setSedanDetails(200, 60);
-        i1.setSedanDetails(300, 80);
+        i1.setSuvDetails(200, 60);
+        i1.setMpvDetails(300, 80);
         servicesOfferedInspection.add(i1);
     }
 
-        public void addGeneralService(Service service) 
-        {
-            servicesOffered.add(service);
-        }
 
         public void addMaintenanceService(Service service) 
         {
@@ -742,32 +733,47 @@ class Catalog {
             servicesOfferedInspection.add(service);
         }
 
-        public void removeServiceFromGeneral(Service service) 
+        public void viewAllServices(VehicleType type) 
         {
-            servicesOffered.remove(service);
-        }
-
-        public void viewAllServices() 
-        {
-            System.out.println("=== General Services ===");
-                for (Service s : servicesOffered) 
-                {
-                s.displayInfo(VehicleType.SEDAN); // or ask user for vehicle type
-                }
             System.out.println("=== Maintenance Services ===");
                 for (Service s : servicesOfferedMaintenance) 
                 {
-                s.displayInfo(VehicleType.SEDAN);
+                s.displayInfo(type);
                 }
             System.out.println("=== Cleaning Services ===");
                 for (Service s : servicesOfferedCleaning) 
                 {
-                s.displayInfo(VehicleType.SEDAN);
+                s.displayInfo(type);
                 }
             System.out.println("=== Inspection Services ===");
                 for (Service s : servicesOfferedInspection)    
                 {
-                s.displayInfo(VehicleType.SEDAN);
+                s.displayInfo(type);
+                }
+        }
+
+        public void viewAllServices() 
+        {
+            System.out.println("=== Maintenance Services ===");
+                for (Service s : servicesOfferedMaintenance) 
+                {
+                    s.displayInfo(VehicleType.SEDAN);
+                    s.displayInfo(VehicleType.SUV);
+                    s.displayInfo(VehicleType.MPV);
+                }
+            System.out.println("=== Cleaning Services ===");
+                for (Service s : servicesOfferedCleaning) 
+                {
+                    s.displayInfo(VehicleType.SEDAN);
+                    s.displayInfo(VehicleType.SUV);
+                    s.displayInfo(VehicleType.MPV);
+                }
+            System.out.println("=== Inspection Services ===");
+                for (Service s : servicesOfferedInspection)    
+                {
+                    s.displayInfo(VehicleType.SEDAN);
+                    s.displayInfo(VehicleType.SUV);
+                    s.displayInfo(VehicleType.MPV);
                 }
         }
 }
@@ -818,30 +824,28 @@ class Service {
     //Display service info with different price and duration based on vehicle type
     public void displayInfo(VehicleType type){
         System.out.println("[" + id + "]" + name);
-        System.out.println("    Description" + description);
+        System.out.println("     Description: " + description);
 
         switch (type) {
             case SEDAN:
-            System.out.printf("    Price: RM%.2f\n" + sedanPrice);
-            System.out.println("    Duration: " + sedanDuration + "minutes");
+            System.out.printf("     Price: RM%.2f\n", sedanPrice);
+            System.out.println("     Duration: " + sedanDuration + " minutes");
             break;
 
             case SUV:
-            System.out.printf("    Price: RM%.2f\n" + suvPrice);
-            System.out.println("    Duration: " + suvDuration + "minutes");
+            System.out.printf("     Price: RM%.2f\n", suvPrice);
+            System.out.println("     Duration: " + suvDuration + " minutes");
             break;
 
         case MPV:
-            System.out.printf("    Price: RM%.2f\n" + mpvPrice);
-            System.out.println("    Duration: " + mpvDuration + "minutes");
+            System.out.printf("     Price: RM%.2f\n", mpvPrice);
+            System.out.println("     Duration: " + mpvDuration + " minutes");
             break;
         }
 
         System.out.println();
     }
 }
-
-
 
 class Admin extends User 
 {
@@ -1278,13 +1282,15 @@ public class projekOOP
 
     public static void customerDashboard(Scanner scanner, Customer customer) 
     {
+        Catalog catalog = new Catalog();
         int choice;
         do 
         {
             System.out.println("\n\n============ Welcome, " + customer.getName() + "!! ============");
             System.out.println("[1] View Available Services");
             System.out.println("[2] Book a Service");
-            System.out.println("[3] Logout");
+            System.out.println("[3] Manage Vehicle");
+            System.out.println("[4] Logout");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
             scanner.nextLine(); 
@@ -1293,6 +1299,7 @@ public class projekOOP
             {
                 case 1:
                 //service catalog
+                catalog.viewAllServices(customer.getVehicle().getVehicleType());
                 break;
 
             case 2:
@@ -1374,6 +1381,10 @@ public class projekOOP
                 break;
 
             case 3:
+                manageVehicle(scanner, customer);
+                break;
+
+            case 4:
                 clearScreen();
                 System.out.println("Logging out...");
                 break;
@@ -1381,7 +1392,120 @@ public class projekOOP
             default:
                 System.out.println("Invalid choice. Please choose 1-3.");
         }
-    } while (choice != 3);
+    } while (choice != 4);
+    }
+
+    public static void manageVehicle(Scanner scanner, Customer customer) {
+        int choice;
+        do {
+            System.out.println("\n========== VEHICLE MANAGEMENT ==========");
+            System.out.println("[1] View Vehicle Information");
+            System.out.println("[2] Update Vehicle Information");
+            System.out.println("[3] Vehicle Service Reminder");
+            System.out.println("[4] Back to Dashboard");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+    
+            switch (choice) {
+                case 1:
+                    viewVehicleInfo(customer);
+                    break;
+                case 2:
+                    updateVehicleInfo(scanner, customer);
+                    break;
+                case 3:
+                    viewServiceReminder(customer);
+                    break;
+                case 4:
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 3);
+    }
+    
+    private static void viewVehicleInfo(Customer customer) {
+        System.out.println("\n========== VEHICLE INFORMATION ==========");
+        customer.getVehicle().displayInfo();
+    }
+    
+    private static void updateVehicleInfo(Scanner scanner, Customer customer) {
+        Vehicle vehicle = customer.getVehicle();
+        System.out.println("\n========== UPDATE VEHICLE INFORMATION ==========");
+        
+        System.out.println("\nCurrent Vehicle Information:");
+        vehicle.displayInfo();
+        
+        System.out.println("\nEnter new details (leave blank to keep current value):");
+        
+        System.out.print("Vehicle Type (" + vehicle.getVehicleType() + "): ");
+        String typeInput = scanner.nextLine();
+        if (!typeInput.isEmpty()) {
+            vehicle.setVehicleType(VehicleType.valueOf(typeInput.toUpperCase()));
+        }
+        
+        System.out.print("Plate Number (" + vehicle.getPlateNum() + "): ");
+        String plateInput = scanner.nextLine();
+        if (!plateInput.isEmpty()) {
+            vehicle.setPlateNum(plateInput);
+        }
+        
+        System.out.print("Brand (" + vehicle.getBrand() + "): ");
+        String brandInput = scanner.nextLine();
+        if (!brandInput.isEmpty()) {
+            vehicle.setBrand(brandInput);
+        }
+        
+        System.out.print("Model (" + vehicle.getModel() + "): ");
+        String modelInput = scanner.nextLine();
+        if (!modelInput.isEmpty()) {
+            vehicle.setModel(modelInput);
+        }
+        
+        System.out.print("Color (" + vehicle.getColour() + "): ");
+        String colorInput = scanner.nextLine();
+        if (!colorInput.isEmpty()) {
+            vehicle.setColour(colorInput);
+        }
+        
+        System.out.print("Current Odometer (" + vehicle.getCurrentOdometer() + "): ");
+        String odoInput = scanner.nextLine();
+        if (!odoInput.isEmpty()) {
+            vehicle.setCurrentOdometer(Integer.parseInt(odoInput));
+        }
+        
+        // Update last service odometer readings
+        System.out.println("\nUpdate Last Service Odometer Readings:");
+        System.out.print("Preventative Maintenance (" + vehicle.getlastServiceOdometerType1() + "): ");
+        String service1Input = scanner.nextLine();
+        if (!service1Input.isEmpty()) {
+            vehicle.setlastServiceOdometerType1(Integer.parseInt(service1Input));
+        }
+        
+        System.out.print("Tire Rotation (" + vehicle.getlastServiceOdometerType2() + "): ");
+        String service2Input = scanner.nextLine();
+        if (!service2Input.isEmpty()) {
+            vehicle.setlastServiceOdometerType2(Integer.parseInt(service2Input));
+        }
+        
+        System.out.print("Wheel Balancing (" + vehicle.getlastServiceOdometerType3() + "): ");
+        String service3Input = scanner.nextLine();
+        if (!service3Input.isEmpty()) {
+            vehicle.setlastServiceOdometerType3(Integer.parseInt(service3Input));
+        }
+        
+        System.out.print("Cooling System Check (" + vehicle.getlastServiceOdometerType4() + "): ");
+        String service4Input = scanner.nextLine();
+        if (!service4Input.isEmpty()) {
+            vehicle.setlastServiceOdometerType4(Integer.parseInt(service4Input));
+        }
+        
+        System.out.println("\nVehicle information updated successfully!");
+    }
+
+    public static void viewServiceReminder(Customer customer){
+        customer.getVehicle().reminderDisplay();
     }
 
     public static void displayMaintenanceBookings(String filename) {
