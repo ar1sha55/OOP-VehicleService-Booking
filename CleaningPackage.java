@@ -39,7 +39,7 @@ public enum CleaningPackage {
             default: throw new IllegalArgumentException("Invalid type");
         }
     }
-    public double getDuration(VehicleType type) { 
+    public int getDuration(VehicleType type) { 
         switch(type) {
             case SEDAN: return durationSedan;
             case SUV: return durationSuv;
@@ -61,7 +61,7 @@ public enum CleaningPackage {
         }
     }
     public static void showSuggestedPackages(VehicleType type) {
-        System.out.println("Suggested Cleaning Packages based on your Vehicle:");
+        System.out.println("Suggested Cleaning Packages:");
         int index = 1;
         for (CleaningPackage p : CleaningPackage.values()) {
             System.out.println(index++ + ". " + p.getName());
