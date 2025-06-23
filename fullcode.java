@@ -1,0 +1,1421 @@
+import java.io.*;
+import java.util.*; 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+
+
+
+class InvalidLogin extends Exception 
+{ 
+    public InvalidLogin(String message) 
+    {
+        super(message);
+    }
+}
+
+interface InterfaceUser 
+    {
+        void register();
+        void login(String email, String password) throws InvalidLogin;
+    }
+
+
+abstract class Booking implements BookingInterface {
+    protected int bookingID; //use protected so accessible within package and all subclasses
+    protected Customer customer; 
+    protected Vehicle vehicle;
+    protected LocalDate bookingDate;
+    protected LocalTime bookingTime;
+    protected String status;
+
+    protected static ArrayList<LocalTime> availableSlots = new ArrayList<>();   
+    protected static ArrayList<Booking> bookingList = new ArrayList<>(); 
+    
+    static {
+        for(int i = 9; i < 18; i++) { //kedai bukak from 0900 - 1700
+            availableSlots.add(LocalTime.of(i, 0));
+        }
+    }
+
+    public Booking(int bookingID, Customer customer, Vehicle vehicle, LocalDate bookingDate, LocalTime bookingTime) {
+        this.bookingID = bookingID;
+        this.customer = customer;
+        this.vehicle = vehicle;
+        this.bookingDate = bookingDate;
+        this.bookingTime = bookingTime;
+        this.status = "Pending"; //by default
+    }
+
+    public abstract void printDetails();
+
+    @Override
+    public void confirmBooking() {this.status = "Confirmed";}
+
+    @Override
+    public void cancelBooking() {
+        this.status = "Cancelled";
+        availableSlots.add(bookingTime);
+    }
+
+    public int getBookingID() {return bookingID;}
+    public LocalTime getBookingTime() {return bookingTime;}
+    public LocalDate getBookingDate() {return bookingDate;}
+    public String getStatus() {return status;}
+    public static boolean hasAvailableSlots() {return !availableSlots.isEmpty();}
+
+    public static void showAvailableSlots() {
+        System.out.println("== AVAILABLE TIME SLOTS ==");
+        for(int i = 0; i < availableSlots.size(); i++) {
+            System.out.println("[" + availableSlots.get(i) + "]\t");
+        }
+    }
+
+    public static LocalTime bookSlot(int i) {
+        if (i < 0 || i >= availableSlots.size()) {
+            throw new IllegalArgumentException("Invalid slot, try again.");
+        }
+
+        return availableSlots.remove(i);
+    }
+
+    public static void saveToFile() {
+        try {
+            PrintWriter mWriter = new PrintWriter(new FileWriter("maintenance_bookings.txt")); //FileWriter to append, prevent overwrite
+            PrintWriter cWriter = new PrintWriter(new FileWriter("cleaning_bookings.txt")); //FileWriter to append, prevent overwrite
+            PrintWriter iWriter = new PrintWriter(new FileWriter("inspection_bookings.txt")); //FileWriter to append, prevent overwrite
+
+            for(Booking b : bookingList) {
+                PrintWriter wr = null;
+
+                if(b instanceof MaintenanceBooking) {
+                    wr = mWriter;
+                } else if (b instanceof CleaningBooking) {
+                    wr = cWriter;
+                } else if (b instanceof InspectionBooking) {
+                    wr = iWriter;
+                }
+
+                if(wr != null) {
+                    wr.println(b.getBookingID());
+                    wr.println(b.customer.getName());
+                    //wr.println(mb.vehicle.getPlateNumber()); tunggu vehicle class
+                    wr.println(b.getBookingDate());
+                    wr.println(b.getBookingTime());
+                    wr.println(b.getStatus());
+
+                    if (b instanceof MaintenanceBooking mb) {
+                        wr.println(mb.getServiceType());
+                        wr.println(mb.getOdometer());
+                        for (String s : mb.getRecommendService()) {
+                            wr.println(s);
+                        }
+                    }
+
+                    if (b instanceof CleaningBooking cb) {
+                        wr.println(cb.getSelectedPkg().getName());
+                        wr.println(cb.getSelectedPkg().getDescription());
+                        wr.println(cb.getSelectedPkg().getPrice(cb.vehicle.getVehicleType()));
+                    }
+
+                    wr.println(); //line between bookings
+                }
+            }
+
+            mWriter.close();
+            cWriter.close();
+            iWriter.close();
+            
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+}
+
+interface BookingInterface {
+    void confirmBooking();
+    void cancelBooking();
+    void printDetails();
+}
+
+class CleaningBooking extends Booking {
+    private static int cID = 2000;
+    private CleaningPackage selectedPkg;
+
+    public CleaningBooking(Customer customer, Vehicle vehicle, LocalDate date, LocalTime time, CleaningPackage selectedPkg) {
+        super(cID++, customer, vehicle, date, time);
+        this.selectedPkg = selectedPkg;
+    }
+
+    @Override
+    public void printDetails() {
+        System.out.println("== CLEANING BOOKING ==");
+        System.out.println("Booking ID: " + cID);
+        System.out.println("Customer Name: " + customer.getName());
+        System.out.println("Vehicle Reg No: " + customer.getName()); //tunggu vehicle class siap
+        System.out.println("Package Name: " + selectedPkg.getName());
+        System.out.println("Package Description: " + selectedPkg.getDescription());
+        System.out.println("Package Price: " + selectedPkg.getPrice(vehicle.getVehicleType()));
+        System.out.println("Booking Date: " + bookingDate);
+        System.out.println("Booking Time: " + bookingTime);
+        System.out.println("Status: " + status);   
+    }
+
+    public CleaningPackage getSelectedPkg() {return selectedPkg;}
+}
+
+enum CleaningPackage {
+    BASIC("Basic Wash", "Exterior wash only", 7.00, 12.00, 20.00, 15, 20, 25),
+    DELUXE("Deluxe Wash", "Exterior + Interior vacuum", 15.00, 20.00, 30.00, 25, 30, 45),
+    PREMIUM("Premium Detail", "Full detailing, wax, tire shine", 70.00, 100.00, 150.00, 60, 80, 100);
+
+    private final String name;
+    private final String description;
+    private final double priceSedan, priceSuv, priceMpv;
+    private final int durationSedan, durationSuv, durationMpv;
+
+    CleaningPackage(String name, String description, double priceSedan, double priceSuv, double priceMpv, int durationSedan, int durationSuv, int durationMpv) {
+        this.name = name;
+        this.description = description;
+        this.priceSedan = priceSedan;
+        this.priceSuv = priceSuv;
+        this.priceMpv = priceMpv;
+        this.durationSedan = durationSedan;
+        this.durationSuv = durationSuv;
+        this.durationMpv = durationMpv;
+    }
+
+    public String getName() { return name; }
+    public String getDescription() { return description; }
+    /*
+    public double getPriceSedan() { return priceSedan; }
+    public double getPriceSuv() { return priceSuv; }
+    public double getPriceMpv() { return priceMpv; }
+    public int getDurationSedan() { return durationSedan; }
+    public int getDurationSuv() { return durationSuv; }
+    public int getDurationMpv() { return durationMpv; }
+    */
+
+    //Based on vehicle type
+    public double getPrice(VehicleType type) { 
+        switch(type) {
+            case SEDAN: return priceSedan;
+            case SUV: return priceSuv;
+            case MPV: return priceMpv;
+            default: throw new IllegalArgumentException("Invalid type");
+        }
+    }
+    public int getDuration(VehicleType type) { 
+        switch(type) {
+            case SEDAN: return durationSedan;
+            case SUV: return durationSuv;
+            case MPV: return durationMpv;
+            default: throw new IllegalArgumentException("Invalid type");
+        }
+    }
+
+    public static void showAllPackages() {
+        System.out.println("Available Cleaning Packages:");
+        int index = 1;
+        for (CleaningPackage p : CleaningPackage.values()) {
+            System.out.println(index++ + ". " + p.getName());
+            System.out.println("   " + p.getDescription());
+            System.out.println("   Prices:");
+            System.out.println("     SEDAN - RM" + p.getPrice(VehicleType.SEDAN) + " (" + p.getDuration(VehicleType.SEDAN) + " mins)");
+            System.out.println("     SUV   - RM" + p.getPrice(VehicleType.SUV)   + " (" + p.getDuration(VehicleType.SUV)   + " mins)");
+            System.out.println("     MPV   - RM" + p.getPrice(VehicleType.MPV)   + " (" + p.getDuration(VehicleType.MPV)   + " mins)");
+        }
+    }
+    public static void showSuggestedPackages(VehicleType type) {
+        System.out.println("Suggested Cleaning Packages:");
+        int index = 1;
+        for (CleaningPackage p : CleaningPackage.values()) {
+            System.out.println(index++ + ". " + p.getName());
+            System.out.println("   " + p.getDescription());
+            System.out.println("   Prices: RM" + p.getPrice(type) + " (" + p.getDuration(type) + " mins)");
+        }
+    }
+
+    public static CleaningPackage fromIndex(int index) {
+        CleaningPackage[] values = CleaningPackage.values();
+        if (index < 1 || index > values.length) {
+            throw new IllegalArgumentException("Invalid package selection.");
+        }
+        return values[index - 1];
+    }
+}
+
+
+class MaintenanceBooking extends Booking {
+    private static int mID = 1000; //maintenance id starts from 1000
+    private String serviceType; //maintenance type (replace tyres, windshield, oil etc.)
+    private int odometer; //ke mileage...tah
+    private ArrayList<String> recommendService;
+
+    public MaintenanceBooking(Customer cust, Vehicle vehicle, LocalDate date, LocalTime time, String serviceType, int odometer) {
+        super(mID++, cust, vehicle, date, time);
+        this.serviceType = serviceType;
+        this.odometer = odometer;
+        this.recommendService = determineService(odometer);
+    }
+
+    public String getServiceType() {return serviceType;}
+    public int getOdometer() {return odometer;}
+    public ArrayList<String> getRecommendService() {return recommendService;}
+
+    private ArrayList<String> determineService(int o) {
+        ArrayList<String> services = new ArrayList<>();
+
+        //store all maintenances in array
+        if (o >= 5000) {
+            services.add("Preventative Maintenance & Oil Change (every 3 months / 5,000km)");
+        }
+        if (o >= 10000) {
+            services.add("Tire Rotation (every 6 months / 10,000km)");
+        }
+        if (o >= 20000) {
+            services.add("Wheel Balancing, Brake Inspection, and Alignment Check (every 12 months / 20,000km)");
+        }
+        if (o >= 40000) {
+            services.add("Cooling System Check, Engine Service, and Transmission Inspection (every 24 months / 40,000km)");
+        }
+
+        if (services.isEmpty()) {
+            services.add("No scheduled maintenance required based on current odometer.");
+        }
+
+        return services;
+    }
+
+    @Override
+    public void printDetails() {
+        System.out.println("## MAINTENANCE BOOKING ##");
+        System.out.println("Booking ID: " + mID);
+        System.out.println("Customer Name: " + customer.getName());
+        System.out.println("Vehicle Reg No: " + customer.getName());  //tunggu vehicle class siap      
+        System.out.println("Service: " + serviceType);
+        System.out.println("Current Odometer Reading: ");
+        System.out.println("Booking Date: " + bookingDate);
+        System.out.println("Booking Time: " + bookingTime);
+        System.out.println("Status: " + status);  
+        System.out.println("Based on your odometer reading, here is your recommended services:");
+        for(int i = 0; i < recommendService.size(); i++) {
+            System.out.println((i+1) + ". " + recommendService);
+        }
+    }
+}
+
+enum VehicleType {
+    SEDAN, SUV, MPV
+}
+
+class Vehicle{
+    private String plateNum;
+    private int lastServiceOdometerType1;
+    private int lastServiceOdometerType2;
+    private int lastServiceOdometerType3;
+    private int lastServiceOdometerType4;
+    private int currentOdometer;
+    private VehicleType vehicleType; //sedan,suv,mpv
+    private String colour;
+    private String brand;
+    private String model;
+
+    //Constructor
+    public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, VehicleType vType, String c, String b, String m){
+        plateNum = pN.toUpperCase();
+        lastServiceOdometerType1 = lSodo1;
+        lastServiceOdometerType2 = lSodo2;
+        lastServiceOdometerType3 = lSodo3;
+        lastServiceOdometerType4 = lSodo4;
+        currentOdometer = cOdo;
+        vehicleType = vType;
+        colour = c.toUpperCase();
+        brand = b.toUpperCase();
+        model = m.toUpperCase();
+    }
+
+    public Vehicle(VehicleType vType, String pN, int currentOdo){
+        plateNum = pN.toUpperCase();
+        vehicleType = vType;
+        currentOdometer = currentOdo;
+    }
+
+    //Accessor
+    public String getPlateNum () {return plateNum;}
+    public int getlastServiceOdometerType1 () {return lastServiceOdometerType1;}
+    public int getlastServiceOdometerType2 () {return lastServiceOdometerType2;}
+    public int getlastServiceOdometerType3 () {return lastServiceOdometerType3;}
+    public int getlastServiceOdometerType4 () {return lastServiceOdometerType4;}
+    public int getCurrentOdometer () {return currentOdometer;}
+    public VehicleType getVehicleType () {return vehicleType;}
+    public String getColour () {return colour;}
+    public String getBrand () {return brand;}
+    public String getModel() {return model;}
+
+    //Setter
+    public void setPlateNum (String plateNum) {this.plateNum = plateNum;}
+    public void setlastServiceOdometerType1 (int lastServiceOdometerType1) {this.lastServiceOdometerType1 = lastServiceOdometerType1;}
+    public void setlastServiceOdometerType2 (int lastServiceOdometerType2) {this.lastServiceOdometerType2 = lastServiceOdometerType2;}
+    public void setlastServiceOdometerType3 (int lastServiceOdometerType3) {this.lastServiceOdometerType3 = lastServiceOdometerType3;}
+    public void setlastServiceOdometerType4 (int lastServiceOdometerType4) {this.lastServiceOdometerType4 = lastServiceOdometerType4;}
+    public void setCurrentOdometer (int currentOdometer) {this.currentOdometer = currentOdometer;}
+    public void setVehicleType (VehicleType vehicleType) {this.vehicleType = vehicleType;}
+    public void setColour (String colour) {this.colour = colour;}
+    public void setBrand (String brand) {this.brand = brand;}
+    public void setModel(String model) {this.model = model;}
+
+    //Update odometer
+    public void updateOdometer(int newOdo){
+        if (newOdo > currentOdometer){
+            currentOdometer = newOdo;
+        }
+        else {
+            System.out.println("Latest odometer reading must be higher than current odometer reading");
+        }
+    }
+
+    //Service reminder based on odometer
+    public ArrayList<String> serviceReminder(){
+        ArrayList<String> reminder = new ArrayList<>();
+
+            switch (vehicleType){
+                case SEDAN:
+                    if ((lastServiceOdometerType1 + 5000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType1 + 5000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
+                    }
+                    else {reminder.add("Need Preventative Maintenance & Oil Change, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType2 + 10000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType2 + 10000) - currentOdometer) + "KM left for Tire Rotation");
+                    }
+                    else {reminder.add("Need Tire Rotation, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType3 + 20000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType3 + 20000) - currentOdometer) + "KM left for Wheel Balancing, Brake Inspection, and Alignment Check");
+                    }
+                    else {reminder.add("Need Wheel Balancing, Brake Inspection, and Alignment Check, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType4 + 40000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType4 + 40000) - currentOdometer) + "KM left for Cooling System, Engine, and Transmission Check");
+                    }
+                    else {reminder.add("Need Cooling System, Engine, and Transmission Check, Set Up a service appointment as soon as possible");}
+
+                    break;
+
+                    case SUV:
+                    if ((lastServiceOdometerType1 + 7000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType1 + 7000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
+                    }
+                    else {reminder.add("Need Preventative Maintenance & Oil Change, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType2 + 12500) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType2 + 12500) - currentOdometer) + "KM left for Tire Rotation");
+                    }
+                    else {reminder.add("Need Tire Rotation, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType3 + 25000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType3 + 25000) - currentOdometer) + "KM left for Wheel Balancing, Brake Inspection, and Alignment Check");
+                    }
+                    else {reminder.add("Need Wheel Balancing, Brake Inspection, and Alignment Check, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType4 + 45000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType4 + 45000) - currentOdometer) + "KM left for Cooling System, Engine, and Transmission Check");
+                    }
+                    else {reminder.add("Need Cooling System, Engine, and Transmission Check, Set Up a service appointment as soon as possible");}
+
+                    break;
+
+                    case MPV:
+                    if ((lastServiceOdometerType1 + 10000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType1 + 10000) - currentOdometer) + "KM left for Preventative Maintenance & Oil Change");
+                    }
+                    else {reminder.add("Need Preventative Maintenance & Oil Change, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType2 + 15000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType2 + 15000) - currentOdometer) + "KM left for Tire Rotation");
+                    }
+                    else {reminder.add("Need Tire Rotation, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType3 + 30000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType3 + 30000) - currentOdometer) + "KM left for Wheel Balancing, Brake Inspection, and Alignment Check");
+                    }
+                    else {reminder.add("Need Wheel Balancing, Brake Inspection, and Alignment Check, Set Up a service appointment as soon as possible");}
+
+                    if ((lastServiceOdometerType4 + 50000) - currentOdometer >0) {
+                        reminder.add(((lastServiceOdometerType4 + 50000) - currentOdometer) + "KM left for Cooling System, Engine, and Transmission Check");
+                    }
+                    else {reminder.add("Need Cooling System, Engine, and Transmission Check, Set Up a service appointment as soon as possible");}
+
+                    break;
+
+                default:
+                    reminder.add("Please consult a technician");
+                    break;
+                }
+        return reminder;
+    }
+
+    //Display owned vehicle information
+    public void displayInfo(){
+        System.out.println("\n-------------- Vehicle Info --------------");
+        System.out.println("Plate Number: " + plateNum);
+        System.out.println("Brand: " + brand);
+        System.out.println("Model: " + model);
+        System.out.println("Colour: " + colour);
+        System.out.println("Vehicle Type: " + vehicleType);
+        System.out.println("Current Odometer: " + currentOdometer);
+        System.out.println("\n-- Last Service Odometer Info --");
+        System.out.println("Preventative Maintenance & Oil Change: " + lastServiceOdometerType1);
+        System.out.println("Tire Rotation: " + lastServiceOdometerType2);
+        System.out.println("Wheel Balancing, Brake Inspection, and Alignment Check: " + lastServiceOdometerType3);
+        System.out.println("Cooling System, Engine, and Transmission Check: " + lastServiceOdometerType4);
+        System.out.println("\n-- Upcoming Service Reminder --");
+        for (int i=0; i<serviceReminder().size(); i++){
+            System.out.println((i+1) + ". " + serviceReminder());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Vehicle (" + plateNum + ")" + brand + " - " + model + "(" + colour + ", " + vehicleType + ")";
+    }
+}
+
+
+
+abstract class User implements InterfaceUser 
+{
+  private String name;
+  private String email;
+  private String password;
+
+  public User(String name, String email, String password) 
+  {
+    this.name = name;
+    this.email = email;
+    this.password = password;
+  }
+
+  public String getName() {return name;}
+  public String getEmail() {return email;}
+  public String getPassword() {return password;}
+
+  public void setName(String name) {this.name = name;}
+  public void setEmail(String email) {this.email = email;}
+  public void setPassword(String password) {this.password = password;}
+
+  public void displayProfile() 
+  {
+    System.out.println("Name: " + name);
+    System.out.println("Email: " + email);
+  }
+
+  public abstract void showRole();
+
+ 
+}
+
+
+class Customer extends User 
+{
+    private static int totalCustomer=0;
+    private String phoneNo;
+    private Vehicle vehicle; 
+    private Vector <Booking> bookings; 
+
+    public Customer(String name, String email, String password, String phoneNo, Vehicle vehicle) 
+    {
+        super(name, email, password); 
+        this.phoneNo = phoneNo;
+        this.vehicle = vehicle;
+        this.bookings = new Vector<>();
+    }
+
+
+    public Customer() 
+    {
+    super("", "", "");  
+    this.phoneNo = "";
+    this.vehicle = null;
+    this.bookings = new Vector<>();
+    }
+
+    public void setPhoneNo(String phoneNo){this.phoneNo = phoneNo;}
+    public String getPhoneNo(){return phoneNo;}
+
+
+    @Override
+    public void register() 
+    {   
+        totalCustomer++;
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersCust.txt", true))) 
+        {
+        bw.write("[" + totalCustomer + "] " + getName() + "|" + getEmail() + "|" + getPassword() + "|" + phoneNo + "|" + vehicle.getPlateNum() + "|" + vehicle.getVehicleType() + "|" + vehicle.getCurrentOdometer());
+        bw.newLine();
+        } 
+        catch (IOException e) 
+        {
+        System.out.println("Error writing to file.");
+        }
+    }
+
+        
+    @Override
+    public void login(String email, String password) throws InvalidLogin 
+    {
+        try (BufferedReader reader = new BufferedReader(new FileReader("usersCust.txt"))) 
+        {
+        String line;
+        boolean found = false;
+
+        while ((line = reader.readLine()) != null) 
+        {
+            String cleanLine = line.replaceAll("\\[\\d+\\]s*", "");
+
+            String[] parts = cleanLine.split("\\|");
+            if (parts.length >= 7) 
+            {
+                String fileName = parts[0];
+                String fileEmail = parts[1];
+                String filePassword = parts[2];
+                String filePhoneNo = parts[3];
+                String plateNum     = parts[4];
+                String vehicleType  = parts[5];
+                int odometer = Integer.parseInt(parts[6]);
+                VehicleType vType = VehicleType.valueOf(vehicleType.toUpperCase()); // ✅ convert string to enum
+                Vehicle vehicle = new Vehicle(vType, plateNum, odometer);
+
+                if (fileEmail.equals(email) && filePassword.equals(password)) 
+                {
+                    this.setName(fileName);
+                    this.setEmail(fileEmail);
+                    this.setPassword(filePassword);
+                    this.setPhoneNo(filePhoneNo);
+                    this.setVehicle(vehicle);  
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) 
+        {
+            throw new InvalidLogin("Login failed. Invalid email or password.");
+        }
+
+        System.out.println("Login successful. Welcome, " + getName() + "!");
+        } 
+        catch (IOException e) 
+        {
+        System.out.println("Error reading users.txt: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void showRole() 
+    {
+        System.out.println("I am a Customer.");
+    }
+
+    public void showVehicle() 
+    {
+        if (vehicle != null) 
+        {
+            System.out.println("Vehicle: " + vehicle.getVehicleType() + "(" + vehicle.getPlateNum() + ")");
+        } 
+        else 
+        {
+            System.out.println("No vehicle registered.");
+        }
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+}
+
+class ReportGenerator {
+    private Vector <Vehicle> vehicles;
+    private Vector <Booking> bookings;
+    private Vector <Customer> customers; 
+
+    public ReportGenerator(){
+        this.vehicles = new Vector<>(vehicles);
+        this.bookings = new Vector<>(bookings);
+        this.customers = new Vector<>(customers);
+    }
+
+    public void generate(){
+        System.out.println("\n===== CUSTOMER VEHICLES REPORT =====");
+        System.out.println("+-------------------------------------------------------------------------------------------------------------------------------+");
+        
+        System.out.printf("| %-3s| %-24s| %-14s| %-14s| %-14s| %-14s| %-14s| %-14s |\n",
+                         "No", "Customer Name", "Vehicle Model", "Vehicle Type", "Vehicle Plate", "Vehicle Brand", "Vehicle Model", "Vehicle Color");
+        System.out.println("+----+-------------------------+---------------+---------------+---------------+---------------+---------------+----------------+");
+        
+        try{
+            int i=1;
+            for (Customer v : customers) {
+                System.out.printf("| %-3d %-25s %-15s %-15s %-15s %-15s %-15s %-15s |\n", 
+                                    i, v.getName(), v.getVehicle().getModel(), v.getVehicle().getVehicleType(), v.getVehicle().getPlateNum(), v.getVehicle().getBrand(), v.getVehicle().getModel(), v.getVehicle().getColour());
+                i++;
+            }
+            System.out.println("+----+-------------------------+---------------+---------------+---------------+---------------+---------------+----------------+\n");
+        }
+        catch (NullPointerException e) {
+            System.out.println("Error: Missing data in customer or vehicle records.");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        
+    }
+}
+
+class Catalog {
+    private ArrayList <Service> servicesOffered;
+    private ArrayList <Service> servicesOfferedMaintenance;
+    private ArrayList <Service> servicesOfferedCleaning;
+    private ArrayList <Service> servicesOfferedInspection;
+
+    public Catalog(){
+        servicesOffered = new ArrayList<>();
+        servicesOfferedMaintenance = new ArrayList<>();
+        servicesOfferedCleaning = new ArrayList<>();
+        servicesOfferedInspection = new ArrayList<>();
+
+        //Add general service offered by the service center
+        servicesOffered.add(new Service(1, "Vehicle Maintenance", "Includes oil change, tire rotation, brake check, and engine tune-up to keep your car running smoothly."));
+        servicesOffered.add(new Service(2, "Vehicle Cleaning", "Interior and exterior cleaning with options for wash, vacuum, wax, and full detailing."));
+        servicesOffered.add(new Service(3, "Vehicle Inspection", "Covers safety and performance checks on brakes, tires, lights, and fluid levels."));
+
+        //Maintenance
+        Service m1 = new Service(101, "Preventative Maintenance & Oil Change", "Includes replacing engine oil and oil filter to ensure proper engine lubrication and prevent early engine wear.");
+        m1.setSedanDetails(120.00, 30);  // RM120, 30 mins
+        m1.setSuvDetails(150.00, 40);    // RM150, 40 mins
+        m1.setMpvDetails(180.00, 45);    // RM180, 45 mins
+
+        Service m2 = new Service(102, "Tire Rotation",  "Rotating the tires to promote even tread wear, extend tire lifespan, and improve driving safety.");
+        m2.setSedanDetails(50.00, 20);   // RM50, 20 mins
+        m2.setSuvDetails(65.00, 25);     // RM65, 25 mins
+        m2.setMpvDetails(80.00, 30);     // RM80, 30 mins
+
+        Service m3 = new Service(103, "Wheel Balancing, Brake Inspection, and Alignment Check", "Helps reduce vibration, improve tire life, and ensure safe and responsive braking.");
+        m3.setSedanDetails(90.00, 35);   // RM90, 35 mins
+        m3.setSuvDetails(110.00, 40);    // RM110, 40 mins
+        m3.setMpvDetails(130.00, 45);    // RM130, 45 mins
+
+        Service m4 = new Service(104, "Cooling System, Engine, and Transmission Check", "Full inspection of radiator, hoses, engine performance, and transmission function to prevent overheating and mechanical failure.");
+        m4.setSedanDetails(160.00, 45);  // RM160, 45 mins
+        m4.setSuvDetails(190.00, 50);    // RM190, 50 mins
+        m4.setMpvDetails(220.00, 60);    // RM220, 60 mins
+
+        servicesOfferedMaintenance.add(m1);
+        servicesOfferedMaintenance.add(m2);
+        servicesOfferedMaintenance.add(m3);
+        servicesOfferedMaintenance.add(m4);
+
+        //Cleaning
+        int id=200;
+        for (CleaningPackage cp : CleaningPackage.values()){
+            Service cleanService = new Service(id++, cp.getName(), cp.getDescription());
+            cleanService.setSedanDetails(cp.getPrice(VehicleType.SEDAN), cp.getDuration(VehicleType.SEDAN));
+            cleanService.setSuvDetails(cp.getPrice(VehicleType.SUV), cp.getDuration(VehicleType.SUV));
+            cleanService.setMpvDetails(cp.getPrice(VehicleType.MPV), cp.getDuration(VehicleType.MPV));
+            servicesOfferedCleaning.add(cleanService);
+        }
+
+        //Inspection
+        Service i1 = new Service(301, "Standard Inspection", "Includes brake system check, lights, tire tread, fluid levels, and battery health.");
+        i1.setSedanDetails(100, 45);
+        i1.setSedanDetails(200, 60);
+        i1.setSedanDetails(300, 80);
+        servicesOfferedInspection.add(i1);
+    }
+
+        public void addGeneralService(Service service) 
+        {
+            servicesOffered.add(service);
+        }
+
+        public void addMaintenanceService(Service service) 
+        {
+            servicesOfferedMaintenance.add(service);
+        }
+
+        public void addCleaningService(Service service) 
+        {
+            servicesOfferedCleaning.add(service);
+        }
+
+        public void addInspectionService(Service service) 
+        {
+            servicesOfferedInspection.add(service);
+        }
+
+        public void removeServiceFromGeneral(Service service) 
+        {
+            servicesOffered.remove(service);
+        }
+
+        public void viewAllServices() 
+        {
+            System.out.println("=== General Services ===");
+                for (Service s : servicesOffered) 
+                {
+                s.displayInfo(VehicleType.SEDAN); // or ask user for vehicle type
+                }
+            System.out.println("=== Maintenance Services ===");
+                for (Service s : servicesOfferedMaintenance) 
+                {
+                s.displayInfo(VehicleType.SEDAN);
+                }
+            System.out.println("=== Cleaning Services ===");
+                for (Service s : servicesOfferedCleaning) 
+                {
+                s.displayInfo(VehicleType.SEDAN);
+                }
+            System.out.println("=== Inspection Services ===");
+                for (Service s : servicesOfferedInspection)    
+                {
+                s.displayInfo(VehicleType.SEDAN);
+                }
+        }
+}
+
+
+class Service {
+    private int id;
+    private String name;
+    private String description;
+    private double sedanPrice, suvPrice, mpvPrice;
+    private int sedanDuration, suvDuration, mpvDuration;
+
+    // Default constructor
+    public Service() {
+        this.id = 0;
+        this.name = "";
+        this.description = "";
+        this.sedanPrice = 0;
+        this.suvPrice = 0;
+        this.mpvPrice = 0;
+        this.sedanDuration = 0;
+        this.suvDuration = 0;
+        this.mpvDuration = 0;
+    }
+    
+    public Service(int id, String n, String desc){
+        this.id = id;
+        name = n;
+        description = desc;
+    }
+
+    // Setter for different category
+    public void setSedanDetails(double price, int duration){
+        sedanPrice = price;
+        sedanDuration = duration;
+    }
+
+    public void setSuvDetails(double price, int duration){
+        suvPrice = price;
+        suvDuration = duration;
+    }
+
+    public void setMpvDetails(double price, int duration){
+        mpvPrice = price;
+        mpvDuration = duration;
+    }
+
+    //Display service info with different price and duration based on vehicle type
+    public void displayInfo(VehicleType type){
+        System.out.println("[" + id + "]" + name);
+        System.out.println("    Description" + description);
+
+        switch (type) {
+            case SEDAN:
+            System.out.printf("    Price: RM%.2f\n" + sedanPrice);
+            System.out.println("    Duration: " + sedanDuration + "minutes");
+            break;
+
+            case SUV:
+            System.out.printf("    Price: RM%.2f\n" + suvPrice);
+            System.out.println("    Duration: " + suvDuration + "minutes");
+            break;
+
+        case MPV:
+            System.out.printf("    Price: RM%.2f\n" + mpvPrice);
+            System.out.println("    Duration: " + mpvDuration + "minutes");
+            break;
+        }
+
+        System.out.println();
+    }
+}
+
+
+
+class Admin extends User 
+{
+    private static int totalAdmin = 3;
+    private ReportGenerator report; 
+    private Catalog catalog;
+
+
+    public Admin(String name, String email, String password) 
+    {
+        super(name, email, password);
+        this.report = new ReportGenerator();
+        this.catalog = new Catalog();
+    }
+
+    public Admin() 
+    {
+    super("", "", "");  
+    }
+
+    public void setReportGenerator(ReportGenerator r)
+    {
+        this.report = r;
+    }
+
+    @Override
+    public void register() 
+    {
+        totalAdmin++;
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersAdmin.txt", true))) 
+        {
+        bw.write("[" + totalAdmin + "] " + "|" + getName() + "|" + getEmail() + "|" + getPassword());
+        bw.newLine();
+        } 
+        catch (IOException e) 
+        {
+        System.out.println("Error writing to file.");
+        }
+    }
+
+@Override
+    public void login(String email, String password) throws InvalidLogin 
+    {
+        try (BufferedReader reader = new BufferedReader(new FileReader("usersAdmin.txt"))) 
+        {
+        String line;
+        boolean found = false;
+
+        while ((line = reader.readLine()) != null) 
+        {
+            String[] parts = line.split("\\|");
+
+            if (parts.length >= 3) 
+            {
+                String fileName = parts[0];
+                String fileEmail = parts[1];
+                String filePassword = parts[2];
+
+                if (fileEmail.equals(email) && filePassword.equals(password)) 
+                {
+                    this.setName(fileName);
+                    this.setEmail(fileEmail);
+                    this.setPassword(filePassword);
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) 
+        {
+            throw new InvalidLogin("Admin login failed: Invalid email or password.");
+        }
+
+        System.out.println("Admin logged in successfully. Welcome, " + getName() + "!");
+        } 
+        catch (IOException e) 
+        {
+        System.out.println("Error reading usersAdmin.txt: " + e.getMessage());
+        }
+    }
+
+
+    @Override
+    public void showRole() 
+    {
+        System.out.println("I am an Admin.");
+    }
+
+    public void generateSystemReport() 
+    {
+        report.generate();
+    }
+
+    public void addServiceToCatalog(Catalog catalog) 
+    {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter service name:");
+        String name = sc.nextLine();
+    
+        System.out.println("Enter service description:");
+        String description = sc.nextLine();
+
+        System.out.println("Enter service ID:");
+        int id = Integer.parseInt(sc.nextLine());
+
+        Service newService = new Service(id, name, description);
+
+        System.out.println("Enter Sedan price and duration:");
+        newService.setSedanDetails(sc.nextDouble(), sc.nextInt());
+        sc.nextLine(); 
+
+        System.out.println("Enter SUV price and duration:");
+        newService.setSuvDetails(sc.nextDouble(), sc.nextInt());
+        sc.nextLine();
+
+        System.out.println("Enter MPV price and duration:");
+        newService.setMpvDetails(sc.nextDouble(), sc.nextInt());
+        sc.nextLine();
+
+        System.out.println("Choose category to add:\n1. General\n2. Maintenance\n3. Cleaning\n4. Inspection\n5. Cancel");
+        int choice = sc.nextInt();
+
+        switch (choice) 
+        {
+            case 1:
+                catalog.addGeneralService(newService);
+                System.out.println("Service added to General catalog.");
+                break;
+            case 2:
+                catalog.addMaintenanceService(newService);
+                System.out.println("Service added to Maintenance catalog.");
+                break;
+            case 3:
+                catalog.addCleaningService(newService);
+                System.out.println("Service added to Cleaning catalog.");
+                break;
+            case 4:
+                catalog.addInspectionService(newService);
+                System.out.println("Service added to Inspection catalog.");
+                break;
+            case 5:
+                System.out.println("Service discarded.");
+                break;
+            default:
+                System.out.println("Invalid choice. Discarding service.");
+        }
+    }
+
+}
+
+
+public class projekOOP
+{
+    public static void clearScreen() 
+    {
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
+    }
+
+    public static void main(String[] args) 
+    {
+        Scanner scanner = new Scanner(System.in);
+        int mainChoice;     
+                 
+                 
+        do 
+        {
+            System.out.println("========== VEHICLE SERVICE BOOKING SYSTEM ==========");
+            System.out.println("[1] Customer");
+            System.out.println("[2] Admin");
+            System.out.println("[3] Exit");
+            System.out.print("Enter your choice: ");
+            mainChoice = scanner.nextInt();
+            System.out.println("====================================================");
+            scanner.nextLine(); 
+            clearScreen();
+
+            switch (mainChoice) 
+            {
+                case 1: 
+                    CustomerMenu(scanner);
+                    clearScreen();
+                    break;
+
+                case 2: 
+                    AdminMenu(scanner);
+                    clearScreen();
+                    break;
+
+                case 3:
+                    System.out.println("Thank you. Bye!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+            }
+
+        } while (mainChoice != 3);
+    }
+
+    public static void CustomerMenu(Scanner scanner) 
+    {
+        int choice;
+        do 
+        {
+            System.out.println("\n=============== WELCOME TO VEHICLE SERVICE BOOKING SYSTEM!! ===============");
+            System.out.println("[1] I'm a new user (Register)");
+            System.out.println("[2] I already have an account (Login)");
+            System.out.println("[3] Return");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); 
+            clearScreen();
+
+            switch (choice) 
+            {
+                case 1:
+
+                    System.out.print("Enter Name: ");
+                    String newName = scanner.nextLine();
+                    System.out.print("Enter Email: ");
+                    String newEmail = scanner.nextLine();
+                    System.out.print("Enter Phone No.: ");
+                    String newPhoneNo = scanner.nextLine();
+                    System.out.print("Enter Password: ");
+                    String newPassword = scanner.nextLine();
+
+                    System.out.print("Enter Vehicle Type: ");
+                    String vehicleType = scanner.nextLine().toUpperCase();
+                    System.out.print("Enter Vehicle's Plate No.: ");
+                    String vehicleNo = scanner.nextLine();
+                    VehicleType v = VehicleType.valueOf(vehicleType);
+                    System.out.print("Enter Current Odometer: ");
+                    int odo = scanner.nextInt();
+
+                    
+                    Vehicle newVehicle = new Vehicle(v, vehicleNo, odo);
+                    Customer newCustomer = new Customer(newName, newEmail, newPassword, newPhoneNo, newVehicle);
+                    newCustomer.register();
+                    clearScreen();
+                    System.out.println("\nYou registered successfully. Please login again. :)\n");
+                    break;
+
+                case 2:
+                    
+                    System.out.print("Enter Email: ");
+                    String loginEmail = scanner.nextLine();
+                    System.out.print("Enter Password: ");
+                    String loginPassword = scanner.nextLine();
+                    clearScreen();
+
+                    Customer c = new Customer();
+
+                    try 
+                    {
+                        c.login(loginEmail, loginPassword);
+                        customerDashboard(scanner, c);
+                    } 
+                    catch (InvalidLogin e) 
+                    {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("Returning to main menu...");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        } while (choice != 3);
+    }
+
+    public static void viewAllCustomers() 
+    {
+    File file = new File("usersCust.txt");
+
+    if (!file.exists()) 
+    {
+        System.out.println("No customers found.");
+        return;
+    }
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) 
+    {
+        String line;
+        int count = 1;
+
+        System.out.println("======== REGISTERED CUSTOMERS ========");
+
+        while ((line = reader.readLine()) != null) 
+        {
+            line = line.replaceAll("\\[\\d+\\]\\s*\\|?", "");
+            String[] parts = line.split("\\|");
+
+            if (parts.length >= 6) {
+                String name = parts[0];
+                String email = parts[1];
+                String password = parts[2]; 
+                String phone = parts[3];
+                String plate = parts[4];
+                String type = parts[5];
+
+                System.out.println("Customer #" + count++);
+                System.out.println("  Name     : " + name);
+                System.out.println("  Email    : " + email);
+                System.out.println("  Phone No : " + phone);
+                System.out.println("  Vehicle  : " + type + " (Plate: " + plate + ")");
+                System.out.println("--------------------------------------");
+            }
+        }
+    } 
+    catch (IOException e) 
+    {
+        System.out.println("Error reading customers: " + e.getMessage());
+    }
+}
+
+
+
+    public static void AdminMenu(Scanner scanner) 
+    {
+        int choice;
+        Catalog catalog = new Catalog();
+
+
+            System.out.print("\n========== ADMIN LOGIN ========== --\nEnter Email: ");
+            String email = scanner.nextLine();
+            System.out.print("Enter Password: ");
+            String password = scanner.nextLine();
+            Admin admin = new Admin();
+
+            try
+            {
+                admin.login(email, password);
+            }
+            catch (InvalidLogin e)
+            {
+                System.out.println(e.getMessage());
+            }
+
+            do 
+            {
+                System.out.println("\n========== ADMIN MENU ==========");
+                System.out.println("[1] View Bookings");
+                System.out.println("[2] View Customers");
+                System.out.println("[3] Generate Report");
+                System.out.println("[4] View Services Ordered");
+                System.out.println("[5] Manage Catalog");
+                System.out.println("[6] Back to Main Menu");
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
+                scanner.nextLine(); 
+
+                switch (choice) {
+                    case 1:
+                        System.out.println("\n======= ALL BOOKINGS =======");
+
+                        System.out.println("\n--- MAINTENANCE BOOKINGS ---");
+                        displayBookings("maintenance_bookings.txt");
+
+                        System.out.println("\n--- CLEANING BOOKINGS ---");
+                        displayBookings("cleaning_bookings.txt");
+
+                        System.out.println("\n--- INSPECTION BOOKINGS ---");
+                        displayBookings("inspection_bookings.txt");
+
+                        break;
+                    case 2:
+                        viewAllCustomers();
+                        break;
+
+                    case 3:
+                        //generate report
+                        break;
+
+                    case 4:
+                        // service diorder currently
+                        break;
+
+                    case 5:
+                        boolean running = true;
+
+                        while (running) 
+                        {
+                        System.out.println("\n=== CATALOG PANEL ===");
+                        System.out.println("1. Add Service to Catalog");
+                        System.out.println("2. View Catalog");
+                        System.out.println("3. Exit");
+                        System.out.print("Enter choice: ");
+                        int cho = scanner.nextInt();
+                        scanner.nextLine(); 
+
+                        switch (cho) 
+                        {
+                        case 1:
+                            admin.addServiceToCatalog(catalog);
+                            break;
+                        case 2:
+                            catalog.viewAllServices();
+                            break;
+                        case 3:
+                            running = false;
+                            break;
+                        default:
+                            System.out.println("Invalid option.");
+                        }
+                        }
+                        System.out.println("Exiting admin panel.");
+
+                    case 6:
+                        System.out.println("Returning to main menu...");
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice.");
+                }
+            } while (choice != 6);
+
+    }
+
+    public static void customerDashboard(Scanner scanner, Customer customer) 
+    {
+        int choice;
+        do 
+        {
+            System.out.println("\n\n============ Welcome, " + customer.getName() + "!! ============");
+            System.out.println("[1] View Available Services");
+            System.out.println("[2] Book a Service");
+            System.out.println("[3] Logout");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) 
+            {
+                case 1:
+                //service catalog
+                break;
+
+            case 2:
+                System.out.println("\nWhich service would you like to book?");
+                System.out.println("[1] Maintenance Service");
+                System.out.println("[2] Cleaning Service");
+                System.out.println("[3] Inspection Service");
+                System.out.print("Enter your choice: ");
+                int serviceChoice = scanner.nextInt();
+                scanner.nextLine();
+
+                System.out.print("Enter booking date (YYYY-MM-DD): ");
+                LocalDate date = LocalDate.parse(scanner.nextLine());
+
+                if(!Booking.hasAvailableSlots()) {
+                    System.out.println("Sorry! No available slots today :(");
+                    break;
+                }
+
+                Booking.showAvailableSlots();
+                System.out.print("Choose a time slot (enter index): ");
+                int slotChoice = scanner.nextInt();
+                scanner.nextLine();
+
+                LocalTime time;
+
+                try {
+                    time = Booking.bookSlot(slotChoice);
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    break;
+                }
+
+                Vehicle custVehicle = customer.getVehicle();
+
+                switch (serviceChoice) {
+                case 1: // Maintenance
+                    System.out.println("\n-- MAINTENANCE SERVICE BOOKING --");
+                    System.out.print("Enter maintenance type (e.g. Oil Change): ");
+                    String type = scanner.nextLine();
+                    System.out.print("Enter current odometer reading: ");
+                    int odo = scanner.nextInt();
+                    scanner.nextLine();
+
+                    MaintenanceBooking mb = new MaintenanceBooking(customer, custVehicle, date, time, type, odo);
+                    mb.printDetails();
+                    Booking.bookingList.add(mb);
+                    Booking.saveToFile();
+                    break;
+
+                case 2: // Cleaning
+                    System.out.println("\n-- CLEANING SERVICE BOOKING --");
+                    CleaningPackage.showAllPackages();
+                    
+                    System.out.print("Enter package choice [1-" + CleaningPackage.values().length + "]: ");
+                    int pkgChoice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    try {
+                        CleaningPackage selectedPkg = CleaningPackage.fromIndex(pkgChoice);
+                        CleaningBooking cb = new CleaningBooking(customer, custVehicle, date, time, selectedPkg);
+                        cb.printDetails();
+                        Booking.bookingList.add(cb);
+                        Booking.saveToFile();
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+
+                case 3: // Inspection
+                    System.out.println("\n-- INSPECTION SERVICE BOOKING --");
+                    InspectionBooking ib = new InspectionBooking(customer, custVehicle, date, time);
+                    ib.printDetails();
+                    Booking.bookingList.add(ib);
+                    Booking.saveToFile();
+                    break; 
+                }
+
+            case 3:
+                clearScreen();
+                System.out.println("Logging out...");
+                break;
+
+            default:
+                System.out.println("Invalid choice. Please choose 1-3.");
+        }
+    } while (choice != 3);
+    }
+
+    public static void displayBookings(String filename) { //kena check lagi nanti
+        File file = new File(filename);
+        if (!file.exists()) {
+            System.out.println("No bookings found in " + filename);
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            int bookingNum = 1;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue; // skip blank lines
+
+                System.out.println("Booking #" + bookingNum++);
+                System.out.println("Booking ID : " + line);
+                System.out.println("Customer   : " + reader.readLine());
+                System.out.println("Vehicle No : " + reader.readLine());
+                System.out.println("Date       : " + reader.readLine());
+                System.out.println("Time       : " + reader.readLine());
+                System.out.println("Status     : " + reader.readLine());
+                System.out.println();
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error reading " + filename + ": " + e.getMessage());
+        }
+    }
+
+
+}
