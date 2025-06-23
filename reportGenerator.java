@@ -1,7 +1,7 @@
 import java.io.*;
 //import java.time.LocalDate;
 
-public class ReportGenerator {
+public class reportGenerator {
     private Vector <Vehicle> vehicles;
     private Vector <Booking> bookings;
     private Vector <Customer> customers; 
