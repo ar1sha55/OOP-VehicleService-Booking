@@ -13,7 +13,7 @@ public class Customer extends User
         super(name, email, password); 
         this.phoneNo = phoneNo;
         this.vehicle = vehicle;
-        //this.bookings = new Vector<>();
+        this.bookings = new Vector<>();
     }
 
 
@@ -35,7 +35,7 @@ public class Customer extends User
         totalCustomer++;
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("usersCust.txt", true))) 
         {
-        bw.write("[" + totalCustomer + "] " + getName() + "|" + getEmail() + "|" + getPassword() + "|" + phoneNo + "|" + vehicle.getPlateNumber() + "|" + vehicle.getVehicleType());
+        bw.write("[" + totalCustomer + "] " + getName() + "|" + getEmail() + "|" + getPassword() + "|" + phoneNo + "|" + vehicle.getPlateNum() + "|" + vehicle.getVehicleType() + "|" + vehicle.getCurrentOdometer());
         bw.newLine();
         } 
         catch (IOException e) 
@@ -58,7 +58,7 @@ public class Customer extends User
             String cleanLine = line.replaceAll("\\[\\d+\\]s*", "");
 
             String[] parts = cleanLine.split("\\|");
-            if (parts.length >= 6) 
+            if (parts.length >= 7) 
             {
                 String fileName = parts[0];
                 String fileEmail = parts[1];
@@ -66,8 +66,9 @@ public class Customer extends User
                 String filePhoneNo = parts[3];
                 String plateNum     = parts[4];
                 String vehicleType  = parts[5];
+                String odometer = parts[6];
 
-                Vehicle vehicle = new Vehicle(plateNum, vehicleType);
+                Vehicle vehicle = new Vehicle(plateNum, vehicleType,odometer);
 
                 if (fileEmail.equals(email) && filePassword.equals(password)) 
                 {
@@ -91,7 +92,7 @@ public class Customer extends User
         } 
         catch (IOException e) 
         {
-        System.out.println("Error reading usersCust.txt: " + e.getMessage());
+        System.out.println("Error reading users.txt: " + e.getMessage());
         }
     }
 
@@ -105,7 +106,7 @@ public class Customer extends User
     {
         if (vehicle != null) 
         {
-            //System.out.println("Vehicle: " + vehicle.getModel());
+            System.out.println("Vehicle: " + vehicle.getVehicleType() + "(" + vehicle.getPlateNum() + ")");
         } 
         else 
         {
@@ -122,4 +123,3 @@ public class Customer extends User
     }
 
 }
-//
