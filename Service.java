@@ -5,22 +5,23 @@ public class Service {
     private double sedanPrice, suvPrice, mpvPrice;
     private int sedanDuration, suvDuration, mpvDuration;
 
+    // Default constructor
+    public Service() {
+        this.id = 0;
+        this.name = "";
+        this.description = "";
+        this.sedanPrice = 0;
+        this.suvPrice = 0;
+        this.mpvPrice = 0;
+        this.sedanDuration = 0;
+        this.suvDuration = 0;
+        this.mpvDuration = 0;
+    }
+    
     public Service(int id, String n, String desc){
         this.id = id;
         name = n;
         description = desc;
-    }
-
-    public Service(){
-        id=0;
-        name="";
-        description="";
-        sedanPrice=0;
-        suvPrice=0;
-        mpvPrice=0;
-        sedanDuration=0;
-        suvDuration=0;
-        mpvDuration=0;
     }
 
     // Setter for different category
