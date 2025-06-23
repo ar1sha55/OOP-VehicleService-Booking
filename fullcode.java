@@ -24,7 +24,7 @@ abstract class Booking implements BookingInterface {
     protected Vehicle vehicle;
     protected LocalDate bookingDate;
     protected LocalTime bookingTime;
-    protected String status;
+    protected Status status;
 
     protected static ArrayList<LocalTime> availableSlots = new ArrayList<>();   
     protected static ArrayList<Booking> bookingList = new ArrayList<>(); 
@@ -40,23 +40,23 @@ abstract class Booking implements BookingInterface {
         this.vehicle = vehicle;
         this.bookingDate = bookingDate;
         this.bookingTime = bookingTime;
-        this.status = "Pending"; //by default
+        this.status = new Status(); // pending by default
     }
 
     public abstract void printDetails();
 
-    @Override
+    /*@Override
     public void confirmBooking() {this.status = "Confirmed";}
 
     @Override
     public void cancelBooking() {
         this.status = "Cancelled";
         availableSlots.add(bookingTime);
-    }
+    }*/
 
     public LocalTime getBookingTime() {return bookingTime;}
     public LocalDate getBookingDate() {return bookingDate;}
-    public String getStatus() {return status;}
+    public Status getStatus() {return status;}
     public static boolean hasAvailableSlots() {return !availableSlots.isEmpty();}
 
     public static void showAvailableSlots() {
@@ -114,8 +114,8 @@ abstract class Booking implements BookingInterface {
 }
 
 interface BookingInterface {
-    void confirmBooking();
-    void cancelBooking();
+    /*void confirmBooking();
+    void cancelBooking();*/
     void printDetails();
 }
 
@@ -229,7 +229,7 @@ class MaintenanceBooking extends Booking {
 
     public MaintenanceBooking(Customer cust, Vehicle vehicle, LocalDate date, LocalTime time) {
         super(cust, vehicle, date, time);
-        this.recommendService = vehicle.serviceReminder(); // Use associated Vehicle method
+        this.recommendService = vehicle.serviceReminder(); 
     }
 
     public ArrayList<String> getRecommendService() { return recommendService; }
@@ -261,7 +261,7 @@ class InspectionBooking extends Booking {
     public void printDetails() {
         System.out.println("\n== INSPECTION BOOKING ==");
         System.out.println("Customer Name: " + customer.getName());
-        System.out.println("Vehicle Reg No: " + vehicle.getPlateNum()); //tunggu vehicle class siap
+        System.out.println("Vehicle Reg No: " + vehicle.getPlateNum()); 
         System.out.println("Booking Date: " + bookingDate);
         System.out.println("Booking Time: " + bookingTime);
         System.out.println("Status: " + status);   
@@ -986,6 +986,37 @@ class Admin extends User
 }
 
 
+enum bookingStatus {
+    PENDING, CONFIRMED, CANCELLED
+}
+
+class Status {
+    private bookingStatus currentStatus;
+    private Booking booking;
+    //constructor, set new booking into pending
+    public Status(){
+        this.currentStatus = bookingStatus.PENDING;
+    }
+    //set status to confirmed
+    public void confirmStatus(){
+        this.currentStatus = bookingStatus.CONFIRMED;
+    }
+    //set status to cancelled
+    public void cancelStatus(){
+        this.currentStatus = bookingStatus.CANCELLED;
+        Booking.availableSlots.remove(booking.bookingTime);
+    }
+
+    public bookingStatus getStatus(){
+        return currentStatus;
+    }
+
+    public String toString(){
+        return currentStatus.toString().substring(0,1) + currentStatus.toString().substring(1).toLowerCase();
+    }
+}
+
+
 public class projekOOP
 {
     public static void clearScreen() 
@@ -1235,11 +1266,11 @@ public class projekOOP
 
                         switch (subChoice) {
                             case 1:
-                                selected.confirmBooking();
+                                selected.status.confirmStatus();
                                 System.out.println("Booking confirmed.");
                                 break;
                             case 2:
-                                selected.cancelBooking();
+                                selected.status.cancelStatus();
                                 System.out.println("Booking cancelled.");
                                 break;
                             case 3:
