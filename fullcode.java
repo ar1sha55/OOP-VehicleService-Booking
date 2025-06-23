@@ -2,9 +2,7 @@ import java.io.*;
 import java.util.*; 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-
-
+import java.time.format.DateTimeParseException;
 
 class InvalidLogin extends Exception 
 { 
@@ -67,7 +65,7 @@ abstract class Booking implements BookingInterface {
     public static void showAvailableSlots() {
         System.out.println("== AVAILABLE TIME SLOTS ==");
         for(int i = 0; i < availableSlots.size(); i++) {
-            System.out.println("[" + availableSlots.get(i) + "]\t");
+            System.out.println("[" + i + "] [" + availableSlots.get(i) + "]\t");
         }
     }
 
@@ -81,14 +79,14 @@ abstract class Booking implements BookingInterface {
 
     public static void saveToFile() {
         try {
-            PrintWriter mWriter = new PrintWriter(new FileWriter("maintenance_bookings.txt")); //FileWriter to append, prevent overwrite
-            PrintWriter cWriter = new PrintWriter(new FileWriter("cleaning_bookings.txt")); //FileWriter to append, prevent overwrite
-            PrintWriter iWriter = new PrintWriter(new FileWriter("inspection_bookings.txt")); //FileWriter to append, prevent overwrite
+            PrintWriter mWriter = new PrintWriter(new FileWriter("maintenance_bookings.txt", true));
+            PrintWriter cWriter = new PrintWriter(new FileWriter("cleaning_bookings.txt", true));
+            PrintWriter iWriter = new PrintWriter(new FileWriter("inspection_bookings.txt", true));
 
-            for(Booking b : bookingList) {
+            for (Booking b : bookingList) {
                 PrintWriter wr = null;
 
-                if(b instanceof MaintenanceBooking) {
+                if (b instanceof MaintenanceBooking) {
                     wr = mWriter;
                 } else if (b instanceof CleaningBooking) {
                     wr = cWriter;
@@ -96,17 +94,15 @@ abstract class Booking implements BookingInterface {
                     wr = iWriter;
                 }
 
-                if(wr != null) {
+                if (wr != null) {
                     wr.println(b.getBookingID());
                     wr.println(b.customer.getName());
-                    //wr.println(mb.vehicle.getPlateNumber()); tunggu vehicle class
+                    wr.println(b.vehicle.getPlateNum());
                     wr.println(b.getBookingDate());
                     wr.println(b.getBookingTime());
                     wr.println(b.getStatus());
 
                     if (b instanceof MaintenanceBooking mb) {
-                        wr.println(mb.getServiceType());
-                        wr.println(mb.getOdometer());
                         for (String s : mb.getRecommendService()) {
                             wr.println(s);
                         }
@@ -118,14 +114,14 @@ abstract class Booking implements BookingInterface {
                         wr.println(cb.getSelectedPkg().getPrice(cb.vehicle.getVehicleType()));
                     }
 
-                    wr.println(); //line between bookings
+                    wr.println(); // Line between bookings
                 }
             }
 
             mWriter.close();
             cWriter.close();
             iWriter.close();
-            
+
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -153,7 +149,7 @@ class CleaningBooking extends Booking {
         System.out.println("== CLEANING BOOKING ==");
         System.out.println("Booking ID: " + cID);
         System.out.println("Customer Name: " + customer.getName());
-        System.out.println("Vehicle Reg No: " + customer.getName()); //tunggu vehicle class siap
+        System.out.println("Vehicle Reg No: " + vehicle.getPlateNum()); 
         System.out.println("Package Name: " + selectedPkg.getName());
         System.out.println("Package Description: " + selectedPkg.getDescription());
         System.out.println("Package Price: " + selectedPkg.getPrice(vehicle.getVehicleType()));
@@ -246,63 +242,51 @@ enum CleaningPackage {
     }
 }
 
-
 class MaintenanceBooking extends Booking {
-    private static int mID = 1000; //maintenance id starts from 1000
-    private String serviceType; //maintenance type (replace tyres, windshield, oil etc.)
-    private int odometer; //ke mileage...tah
+    private static int mID = 1000;
     private ArrayList<String> recommendService;
 
-    public MaintenanceBooking(Customer cust, Vehicle vehicle, LocalDate date, LocalTime time, String serviceType, int odometer) {
+    public MaintenanceBooking(Customer cust, Vehicle vehicle, LocalDate date, LocalTime time) {
         super(mID++, cust, vehicle, date, time);
-        this.serviceType = serviceType;
-        this.odometer = odometer;
-        this.recommendService = determineService(odometer);
+        this.recommendService = vehicle.serviceReminder(); // Use associated Vehicle method
     }
 
-    public String getServiceType() {return serviceType;}
-    public int getOdometer() {return odometer;}
-    public ArrayList<String> getRecommendService() {return recommendService;}
-
-    private ArrayList<String> determineService(int o) {
-        ArrayList<String> services = new ArrayList<>();
-
-        //store all maintenances in array
-        if (o >= 5000) {
-            services.add("Preventative Maintenance & Oil Change (every 3 months / 5,000km)");
-        }
-        if (o >= 10000) {
-            services.add("Tire Rotation (every 6 months / 10,000km)");
-        }
-        if (o >= 20000) {
-            services.add("Wheel Balancing, Brake Inspection, and Alignment Check (every 12 months / 20,000km)");
-        }
-        if (o >= 40000) {
-            services.add("Cooling System Check, Engine Service, and Transmission Inspection (every 24 months / 40,000km)");
-        }
-
-        if (services.isEmpty()) {
-            services.add("No scheduled maintenance required based on current odometer.");
-        }
-
-        return services;
-    }
+    public ArrayList<String> getRecommendService() { return recommendService; }
 
     @Override
     public void printDetails() {
         System.out.println("## MAINTENANCE BOOKING ##");
-        System.out.println("Booking ID: " + mID);
+        System.out.println("Booking ID: " + bookingID);
         System.out.println("Customer Name: " + customer.getName());
-        System.out.println("Vehicle Reg No: " + customer.getName());  //tunggu vehicle class siap      
-        System.out.println("Service: " + serviceType);
-        System.out.println("Current Odometer Reading: ");
+        System.out.println("Vehicle Reg No: " + vehicle.getPlateNum()); 
         System.out.println("Booking Date: " + bookingDate);
         System.out.println("Booking Time: " + bookingTime);
         System.out.println("Status: " + status);  
-        System.out.println("Based on your odometer reading, here is your recommended services:");
-        for(int i = 0; i < recommendService.size(); i++) {
-            System.out.println((i+1) + ". " + recommendService);
+        System.out.println("Based on your odometer reading, here are your recommended services:");
+
+        for (int i = 0; i < recommendService.size(); i++) {
+            System.out.println((i + 1) + ". " + recommendService.get(i));
         }
+    }
+}
+
+
+class InspectionBooking extends Booking {
+    private static int iID = 3000;
+    
+    public InspectionBooking(Customer customer, Vehicle vehicle, LocalDate date, LocalTime time) {
+        super(iID++, customer, vehicle, date, time);
+    }
+
+    @Override
+    public void printDetails() {
+        System.out.println("== INSPECTION BOOKING ==");
+        System.out.println("Booking ID: " + iID);
+        System.out.println("Customer Name: " + customer.getName());
+        System.out.println("Vehicle Reg No: " + vehicle.getPlateNum()); //tunggu vehicle class siap
+        System.out.println("Booking Date: " + bookingDate);
+        System.out.println("Booking Time: " + bookingTime);
+        System.out.println("Status: " + status);   
     }
 }
 
@@ -1053,8 +1037,8 @@ public class projekOOP
                     System.out.println("Thank you. Bye!");
                     break;
 
-                default:
-                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+                default: 
+                    System.out.println("Invalid choice. Please choose 1-3 only.");
             }
 
         } while (mainChoice != 3);
@@ -1220,13 +1204,13 @@ public class projekOOP
                         System.out.println("\n======= ALL BOOKINGS =======");
 
                         System.out.println("\n--- MAINTENANCE BOOKINGS ---");
-                        displayBookings("maintenance_bookings.txt");
+                        displayMaintenanceBookings("maintenance_bookings.txt");
 
                         System.out.println("\n--- CLEANING BOOKINGS ---");
-                        displayBookings("cleaning_bookings.txt");
+                        displayCleaningBookings("cleaning_bookings.txt");
 
                         System.out.println("\n--- INSPECTION BOOKINGS ---");
-                        displayBookings("inspection_bookings.txt");
+                        displayInspectionBookings("inspection_bookings.txt");
 
                         break;
                     case 2:
@@ -1310,10 +1294,19 @@ public class projekOOP
                 int serviceChoice = scanner.nextInt();
                 scanner.nextLine();
 
-                System.out.print("Enter booking date (YYYY-MM-DD): ");
-                LocalDate date = LocalDate.parse(scanner.nextLine());
+                LocalDate date = null;
+                while (true) {
+                    try {
+                        System.out.print("Enter booking date (YYYY-MM-DD): ");
+                        String input = scanner.nextLine();
+                        date = LocalDate.parse(input);
+                        break; 
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid date format. Please enter in YYYY-MM-DD format.");
+                    }
+                }
 
-                if(!Booking.hasAvailableSlots()) {
+                if(!Booking.hasAvailableSlots()) { 
                     System.out.println("Sorry! No available slots today :(");
                     break;
                 }
@@ -1336,21 +1329,13 @@ public class projekOOP
 
                 switch (serviceChoice) {
                 case 1: // Maintenance
-                    System.out.println("\n-- MAINTENANCE SERVICE BOOKING --");
-                    System.out.print("Enter maintenance type (e.g. Oil Change): ");
-                    String type = scanner.nextLine();
-                    System.out.print("Enter current odometer reading: ");
-                    int odo = scanner.nextInt();
-                    scanner.nextLine();
-
-                    MaintenanceBooking mb = new MaintenanceBooking(customer, custVehicle, date, time, type, odo);
+                    MaintenanceBooking mb = new MaintenanceBooking(customer, custVehicle, date, time);
                     mb.printDetails();
                     Booking.bookingList.add(mb);
                     Booking.saveToFile();
                     break;
 
                 case 2: // Cleaning
-                    System.out.println("\n-- CLEANING SERVICE BOOKING --");
                     CleaningPackage.showAllPackages();
                     
                     System.out.print("Enter package choice [1-" + CleaningPackage.values().length + "]: ");
@@ -1369,13 +1354,14 @@ public class projekOOP
                     break;
 
                 case 3: // Inspection
-                    System.out.println("\n-- INSPECTION SERVICE BOOKING --");
                     InspectionBooking ib = new InspectionBooking(customer, custVehicle, date, time);
                     ib.printDetails();
                     Booking.bookingList.add(ib);
                     Booking.saveToFile();
                     break; 
                 }
+
+                break;
 
             case 3:
                 clearScreen();
@@ -1388,7 +1374,7 @@ public class projekOOP
     } while (choice != 3);
     }
 
-    public static void displayBookings(String filename) { //kena check lagi nanti
+    public static void displayMaintenanceBookings(String filename) {
         File file = new File(filename);
         if (!file.exists()) {
             System.out.println("No bookings found in " + filename);
@@ -1397,18 +1383,24 @@ public class projekOOP
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            int bookingNum = 1;
+            int count = 1;
 
             while ((line = reader.readLine()) != null) {
-                if (line.trim().isEmpty()) continue; // skip blank lines
+                if (line.trim().isEmpty()) continue;
 
-                System.out.println("Booking #" + bookingNum++);
+                System.out.println("========== Booking #" + count++ + " ==========");
                 System.out.println("Booking ID : " + line);
                 System.out.println("Customer   : " + reader.readLine());
                 System.out.println("Vehicle No : " + reader.readLine());
                 System.out.println("Date       : " + reader.readLine());
                 System.out.println("Time       : " + reader.readLine());
                 System.out.println("Status     : " + reader.readLine());
+                System.out.println("Recommended Services:");
+
+                while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
+                    System.out.println(" - " + line);
+                }
+
                 System.out.println();
             }
 
@@ -1417,5 +1409,67 @@ public class projekOOP
         }
     }
 
+    public static void displayCleaningBookings(String filename) {
+        File file = new File(filename);
+        if (!file.exists()) {
+            System.out.println("No bookings found in " + filename);
+            return;
+        }
 
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            int count = 1;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+
+                System.out.println("========== Booking #" + count++ + " ==========");
+                System.out.println("Booking ID : " + line);
+                System.out.println("Customer   : " + reader.readLine());
+                System.out.println("Vehicle No : " + reader.readLine());
+                System.out.println("Date       : " + reader.readLine());
+                System.out.println("Time       : " + reader.readLine());
+                System.out.println("Status     : " + reader.readLine());
+                System.out.println("Package    : " + reader.readLine());   // getName()
+                System.out.println("Description: " + reader.readLine());   // getDescription()
+                System.out.println("Price      : RM" + reader.readLine()); // getPrice()
+
+                System.out.println();
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error reading " + filename + ": " + e.getMessage());
+        }
+    }
+
+    public static void displayInspectionBookings(String filename) {
+        File file = new File(filename);
+        if (!file.exists()) {
+            System.out.println("No bookings found in " + filename);
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            int count = 1;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+
+                System.out.println("========== Booking #" + count++ + " ==========");
+                System.out.println("Booking ID : " + line);
+                System.out.println("Customer   : " + reader.readLine());
+                System.out.println("Vehicle No : " + reader.readLine());
+                System.out.println("Date       : " + reader.readLine());
+                System.out.println("Time       : " + reader.readLine());
+                System.out.println("Status     : " + reader.readLine());
+
+                reader.readLine();
+                System.out.println();
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error reading " + filename + ": " + e.getMessage());
+        }
+    }
 }
