@@ -1,10 +1,10 @@
 import java.util.*;
 
-public enum vehicleType {
+enum vehicleType {
     SEDAN, SUV, MPV
 }
 
-class Vehicle{
+public class Vehicle{
     private String plateNum;
     private int lastServiceOdometerType1;
     private int lastServiceOdometerType2;
