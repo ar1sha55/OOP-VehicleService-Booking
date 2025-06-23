@@ -25,7 +25,7 @@ abstract class Booking implements BookingInterface {
         this.vehicle = vehicle;
         this.bookingDate = bookingDate;
         this.bookingTime = bookingTime;
-        this.status = "Pending"; //by default
+        this.status = new Status(); //by default
     }
 
     public abstract void printDetails();
