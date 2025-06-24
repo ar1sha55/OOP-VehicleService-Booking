@@ -493,7 +493,7 @@ class Customer extends User
     private static int totalCustomer=0;
     private String phoneNo;
     private Vehicle vehicle; 
-    private Vector <Booking> bookings; 
+    //private Vector <Booking> bookings; 
 
     public Customer(String name, String email, String password, String phoneNo, Vehicle vehicle) 
     {
@@ -615,7 +615,7 @@ class Report {
     private Vector <MaintenanceBooking> maintenance = new Vector<MaintenanceBooking>();
     private Vector <InspectionBooking> inspection = new Vector<InspectionBooking>();
     private Vector <CleaningBooking> cleaning = new Vector<CleaningBooking>();
-    private Vector <Customer> customer;
+    //private Vector <Customer> customer;
 
     public Report(){
         this.allBookings = new Vector<Booking>();
@@ -678,7 +678,7 @@ class Report {
 }
 
 class Catalog {
-    private ArrayList <Service> servicesOffered;
+    //private ArrayList <Service> servicesOffered;
     private ArrayList <Service> servicesOfferedMaintenance;
     private ArrayList <Service> servicesOfferedCleaning;
     private ArrayList <Service> servicesOfferedInspection;
@@ -867,14 +867,14 @@ class Admin extends User
 {
     private static int totalAdmin = 3;
     private Report report = new Report(); 
-    private Catalog catalog;
+    //private Catalog catalog;
 
 
     public Admin(String name, String email, String password) 
     {
         super(name, email, password);
         //this.report = new Report();
-        this.catalog = new Catalog();
+        //this.catalog = new Catalog();
     }
 
     public Admin() 
@@ -1282,7 +1282,7 @@ public class projekOOP
             System.out.println("[4] Manage Catalog");
             System.out.println("[5] Back to Main Menu");
             
-            choice = getValidatedInput(scanner, 1, 6);
+            choice = getValidatedInput(scanner, 1, 5);
             scanner.nextLine(); 
 
             switch (choice) {
