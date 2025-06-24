@@ -41,7 +41,7 @@ abstract class Booking implements BookingInterface {
         this.vehicle = vehicle;
         this.bookingDate = bookingDate;
         this.bookingTime = bookingTime;
-        this.status = new Status(); // pending by default
+        this.status = new Status(this); // pending by default
     }
 
     public abstract void printDetails();
@@ -1028,8 +1028,9 @@ class Status {
     private bookingStatus currentStatus;
     private Booking booking;
     //constructor, set new booking into pending
-    public Status(){
+    public Status(Booking booking){
         this.currentStatus = bookingStatus.PENDING;
+        this.booking = booking;
     }
     //set status to confirmed
     public void confirmStatus(){
