@@ -489,7 +489,7 @@ class Customer extends User
     private static int totalCustomer=0;
     private String phoneNo;
     private Vehicle vehicle; 
-    //private Vector <Booking> bookings; 
+    private Vector <Booking> bookings; 
 
     public Customer(String name, String email, String password, String phoneNo, Vehicle vehicle) 
     {
