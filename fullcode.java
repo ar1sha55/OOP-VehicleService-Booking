@@ -986,27 +986,24 @@ class Admin extends User
         newService.setMpvDetails(sc.nextDouble(), sc.nextInt());
         sc.nextLine();
 
-        System.out.println("Choose category to add:\n1. General\n2. Maintenance\n3. Cleaning\n4. Inspection\n5. Cancel");
+        System.out.println("Choose category to add:\n1. Maintenance\n2. Cleaning\n3. Inspection\n4. Cancel");
         int choice = sc.nextInt();
 
         switch (choice) 
         {
             case 1:
-                System.out.println("Service added to General catalog.");
-                break;
-            case 2:
                 catalog.addMaintenanceService(newService);
                 System.out.println("Service added to Maintenance catalog.");
                 break;
-            case 3:
+            case 2:
                 catalog.addCleaningService(newService);
                 System.out.println("Service added to Cleaning catalog.");
                 break;
-            case 4:
+            case 3:
                 catalog.addInspectionService(newService);
                 System.out.println("Service added to Inspection catalog.");
                 break;
-            case 5:
+            case 4:
                 System.out.println("Service discarded.");
                 break;
             default:
