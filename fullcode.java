@@ -608,10 +608,9 @@ class Customer extends User
 
 class Report {
     private Vector <Booking> allBookings;
-    private Vector <MaintenanceBooking> maintenance = new Vector<MaintenanceBooking>();
-    private Vector <InspectionBooking> inspection = new Vector<InspectionBooking>();
-    private Vector <CleaningBooking> cleaning = new Vector<CleaningBooking>();
-    //private Vector <Customer> customer;
+    private Vector <MaintenanceBooking> maintenance;
+    private Vector <InspectionBooking> inspection;
+    private Vector <CleaningBooking> cleaning;
 
     public Report(){
         this.allBookings = new Vector<Booking>();
