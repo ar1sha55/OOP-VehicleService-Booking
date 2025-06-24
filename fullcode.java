@@ -434,10 +434,6 @@ Vehicle{
         System.out.println("Tire Rotation: " + lastServiceOdometerType2);
         System.out.println("Wheel Balancing, Brake Inspection, and Alignment Check: " + lastServiceOdometerType3);
         System.out.println("Cooling System, Engine, and Transmission Check: " + lastServiceOdometerType4);
-        System.out.println("\n-- Upcoming Service Reminder --");
-        for (int i=0; i<serviceReminder().size(); i++){
-            System.out.println((i+1) + ". " + serviceReminder());
-        }
     }
 
     public void reminderDisplay(){
