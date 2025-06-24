@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*; 
 import java.time.LocalDate;
@@ -45,14 +46,14 @@ abstract class Booking implements BookingInterface {
 
     public abstract void printDetails();
 
-    /*@Override
-    public void confirmBooking() {this.status = "Confirmed";}
+    @Override
+    public void confirmBooking() {this.status.confirmStatus();}
 
     @Override
     public void cancelBooking() {
-        this.status = "Cancelled";
+        this.status.cancelStatus();
         availableSlots.add(bookingTime);
-    }*/
+    }
 
     public LocalTime getBookingTime() {return bookingTime;}
     public LocalDate getBookingDate() {return bookingDate;}
@@ -114,8 +115,8 @@ abstract class Booking implements BookingInterface {
 }
 
 interface BookingInterface {
-    /*void confirmBooking();
-    void cancelBooking();*/
+    void confirmBooking();
+    void cancelBooking();
     void printDetails();
 }
 
@@ -137,7 +138,7 @@ class CleaningBooking extends Booking {
         System.out.println("Package Price: " + selectedPkg.getPrice(vehicle.getVehicleType()));
         System.out.println("Booking Date: " + bookingDate);
         System.out.println("Booking Time: " + bookingTime);
-        System.out.println("Status: " + status);   
+        System.out.println("Status: " + getStatus().toString());   
     }
 
     public CleaningPackage getSelectedPkg() {return selectedPkg;}
@@ -241,7 +242,7 @@ class MaintenanceBooking extends Booking {
         System.out.println("Vehicle Reg No: " + vehicle.getPlateNum()); 
         System.out.println("Booking Date: " + bookingDate);
         System.out.println("Booking Time: " + bookingTime);
-        System.out.println("Status: " + status);  
+        System.out.println("Status: " + getStatus().toString());  
         System.out.println("Based on your odometer reading, here are your recommended services:");
 
         for (int i = 0; i < recommendService.size(); i++) {
@@ -249,7 +250,6 @@ class MaintenanceBooking extends Booking {
         }
     }
 }
-
 
 class InspectionBooking extends Booking {
     
@@ -264,7 +264,7 @@ class InspectionBooking extends Booking {
         System.out.println("Vehicle Reg No: " + vehicle.getPlateNum()); 
         System.out.println("Booking Date: " + bookingDate);
         System.out.println("Booking Time: " + bookingTime);
-        System.out.println("Status: " + status);   
+        System.out.println("Status: " + getStatus().toString());   
     }
 }
 
@@ -272,7 +272,8 @@ enum VehicleType {
     SEDAN, SUV, MPV
 }
 
-class Vehicle{
+class 
+Vehicle{
     private String plateNum;
     private int lastServiceOdometerType1;
     private int lastServiceOdometerType2;
@@ -458,33 +459,32 @@ class Vehicle{
 
 abstract class User implements InterfaceUser 
 {
-  private String name;
-  private String email;
-  private String password;
+    private String name;
+    private String email;
+    private String password;
 
-  public User(String name, String email, String password) 
-  {
-    this.name = name;
-    this.email = email;
-    this.password = password;
-  }
+    public User(String name, String email, String password) 
+    {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 
-  public String getName() {return name;}
-  public String getEmail() {return email;}
-  public String getPassword() {return password;}
+    public String getName() {return name;}
+    public String getEmail() {return email;}
+    public String getPassword() {return password;}
 
-  public void setName(String name) {this.name = name;}
-  public void setEmail(String email) {this.email = email;}
-  public void setPassword(String password) {this.password = password;}
+    public void setName(String name) {this.name = name;}
+    public void setEmail(String email) {this.email = email;}
+    public void setPassword(String password) {this.password = password;}
 
-  public void displayProfile() 
-  {
-    System.out.println("Name: " + name);
-    System.out.println("Email: " + email);
-  }
+    public void displayProfile() 
+    {
+        System.out.println("Name: " + name);
+        System.out.println("Email: " + email);
+    }
 
-  public abstract void showRole();
-
+    public abstract void showRole(); 
 }
 
 
@@ -554,7 +554,7 @@ class Customer extends User
                 String plateNum     = parts[4];
                 String vehicleType  = parts[5];
                 int odometer = Integer.parseInt(parts[6]);
-                VehicleType vType = VehicleType.valueOf(vehicleType.toUpperCase()); // ✅ convert string to enum
+                VehicleType vType = VehicleType.valueOf(vehicleType.toUpperCase()); //convert string to enum
                 Vehicle vehicle = new Vehicle(vType, plateNum, odometer);
 
                 if (fileEmail.equals(email) && filePassword.equals(password)) 
@@ -610,33 +610,63 @@ class Customer extends User
     }
 }
 
-class ReportGenerator {
-    private Vector <Vehicle> vehicles;
-    private Vector <Booking> bookings;
-    private Vector <Customer> customers; 
+class Report {
+    private Vector <Booking> allBookings;
+    private Vector <MaintenanceBooking> maintenance = new Vector<MaintenanceBooking>();
+    private Vector <InspectionBooking> inspection = new Vector<InspectionBooking>();
+    private Vector <CleaningBooking> cleaning = new Vector<CleaningBooking>();
+    private Vector <Customer> customer;
 
-    public ReportGenerator(){
-        this.vehicles = new Vector<>(vehicles);
-        this.bookings = new Vector<>(bookings);
-        this.customers = new Vector<>(customers);
+    public Report(){
+        this.allBookings = new Vector<Booking>();
+    }
+
+    public void setMaintenance(Vector<MaintenanceBooking> maintenance) {
+        this.maintenance = maintenance;
+    }
+
+    public void setInspection(Vector <InspectionBooking> inspection) {
+        this.inspection = inspection;
+    }
+
+    public void setCleaning(Vector <CleaningBooking> cleaning) {
+        this.cleaning = cleaning;
+    }
+
+    public void refreshAllBookings() {
+        allBookings.clear();
+        allBookings.addAll(cleaning);
+        allBookings.addAll(maintenance);
+        allBookings.addAll(inspection);
     }
 
     public void generate(){
-        System.out.println("\n===== CUSTOMER VEHICLES REPORT =====");
-        System.out.println("+-------------------------------------------------------------------------------------------------------------------------------+");
+        System.out.println("\n===== VEHICLES BOOKING SERVICE REPORT =====");
+        System.out.println("+----+-------------------------+---------------+----------------+---------------------+------------+");
         
-        System.out.printf("| %-3s| %-24s| %-14s| %-14s| %-14s| %-14s| %-14s| %-14s |\n",
-                         "No", "Customer Name", "Vehicle Model", "Vehicle Type", "Vehicle Plate", "Vehicle Brand", "Vehicle Model", "Vehicle Color");
-        System.out.println("+----+-------------------------+---------------+---------------+---------------+---------------+---------------+----------------+");
+        System.out.printf("| %-3s| %-24s| %-14s| %-14s | %-20s| %-10s |\n",
+                         "No", "Customer Name", "Vehicle Plate", "Vehicle Type", "Service Type", "Status");
+        System.out.println("+----+-------------------------+---------------+----------------+---------------------+------------+");
         
         try{
             int i=1;
-            for (Customer v : customers) {
-                System.out.printf("| %-3d %-25s %-15s %-15s %-15s %-15s %-15s %-15s |\n", 
-                                    i, v.getName(), v.getVehicle().getModel(), v.getVehicle().getVehicleType(), v.getVehicle().getPlateNum(), v.getVehicle().getBrand(), v.getVehicle().getModel(), v.getVehicle().getColour());
+            for (Booking b : allBookings) {
+                String typeService;
+                if (b instanceof MaintenanceBooking) {
+                    typeService = "Maintenance";
+                }else if (b instanceof InspectionBooking) {
+                    typeService = "Inspection";
+                } else {
+                    typeService = "Cleaning";
+                }
+                System.out.printf("| %-3d| %-24s| %-14s| %-14s | %-20s| %-10s |\n", 
+                                    i, b.customer.getName(), b.customer.getVehicle().getPlateNum(), b.vehicle.getVehicleType(), typeService, b.getStatus().toString());
                 i++;
             }
-            System.out.println("+----+-------------------------+---------------+---------------+---------------+---------------+---------------+----------------+\n");
+            System.out.println("+----+-------------------------+---------------+----------------+---------------------+------------+");
+            System.out.println("\nTotal of Maintenance Booking\t: " + maintenance.size());
+            System.out.println("Total of Inspection Booking\t: " + inspection.size());
+            System.out.println("Total of Cleaning Booking\t: " + cleaning.size() + "\n");
         }
         catch (NullPointerException e) {
             System.out.println("Error: Missing data in customer or vehicle records.");
@@ -702,65 +732,65 @@ class Catalog {
         servicesOfferedInspection.add(i1);
     }
 
-        public void addMaintenanceService(Service service) 
-        {
-            servicesOfferedMaintenance.add(service);
-        }
+    public void addMaintenanceService(Service service) 
+    {
+        servicesOfferedMaintenance.add(service);
+    }
 
-        public void addCleaningService(Service service) 
-        {
-            servicesOfferedCleaning.add(service);
-        }
+    public void addCleaningService(Service service) 
+    {
+        servicesOfferedCleaning.add(service);
+    }
 
-        public void addInspectionService(Service service) 
-        {
-            servicesOfferedInspection.add(service);
-        }
+    public void addInspectionService(Service service) 
+    {
+        servicesOfferedInspection.add(service);
+    }
 
-         public void viewAllServices(VehicleType type) 
-        {
-            System.out.println("=== Maintenance Services ===");
-                for (Service s : servicesOfferedMaintenance) 
-                {
-                s.displayInfo(type);
-                }
-            System.out.println("=== Cleaning Services ===");
-                for (Service s : servicesOfferedCleaning) 
-                {
-                s.displayInfo(type);
-                }
-            System.out.println("=== Inspection Services ===");
-                for (Service s : servicesOfferedInspection)    
-                {
-                s.displayInfo(type);
-                }
-        }
+        public void viewAllServices(VehicleType type) 
+    {
+        System.out.println("=== Maintenance Services ===");
+            for (Service s : servicesOfferedMaintenance) 
+            {
+            s.displayInfo(type);
+            }
+        System.out.println("=== Cleaning Services ===");
+            for (Service s : servicesOfferedCleaning) 
+            {
+            s.displayInfo(type);
+            }
+        System.out.println("=== Inspection Services ===");
+            for (Service s : servicesOfferedInspection)    
+            {
+            s.displayInfo(type);
+            }
+    }
 
 
-        public void viewAllServices() 
-        {
-            System.out.println("=== Maintenance Services ===");
-                for (Service s : servicesOfferedMaintenance) 
-                {
-                    s.displayInfo(VehicleType.SEDAN);
-                    s.displayInfo(VehicleType.SUV);
-                    s.displayInfo(VehicleType.MPV);
-                }
-            System.out.println("=== Cleaning Services ===");
-                for (Service s : servicesOfferedCleaning) 
-                {
-                    s.displayInfo(VehicleType.SEDAN);
-                    s.displayInfo(VehicleType.SUV);
-                    s.displayInfo(VehicleType.MPV);
-                }
-            System.out.println("=== Inspection Services ===");
-                for (Service s : servicesOfferedInspection)    
-                {
+    public void viewAllServices() 
+    {
+        System.out.println("=== Maintenance Services ===");
+            for (Service s : servicesOfferedMaintenance) 
+            {
                 s.displayInfo(VehicleType.SEDAN);
                 s.displayInfo(VehicleType.SUV);
                 s.displayInfo(VehicleType.MPV);
-                }
-        }
+            }
+        System.out.println("=== Cleaning Services ===");
+            for (Service s : servicesOfferedCleaning) 
+            {
+                s.displayInfo(VehicleType.SEDAN);
+                s.displayInfo(VehicleType.SUV);
+                s.displayInfo(VehicleType.MPV);
+            }
+        System.out.println("=== Inspection Services ===");
+            for (Service s : servicesOfferedInspection)    
+            {
+            s.displayInfo(VehicleType.SEDAN);
+            s.displayInfo(VehicleType.SUV);
+            s.displayInfo(VehicleType.MPV);
+            }
+    }
 }
 
 
@@ -833,18 +863,17 @@ class Service {
 }
 
 
-
 class Admin extends User 
 {
     private static int totalAdmin = 3;
-    private ReportGenerator report; 
+    private Report report = new Report(); 
     private Catalog catalog;
 
 
     public Admin(String name, String email, String password) 
     {
         super(name, email, password);
-        this.report = new ReportGenerator();
+        //this.report = new Report();
         this.catalog = new Catalog();
     }
 
@@ -853,7 +882,7 @@ class Admin extends User
     super("", "", "");  
     }
 
-    public void setReportGenerator(ReportGenerator r)
+    public void setReport(Report r)
     {
         this.report = r;
     }
@@ -922,6 +951,13 @@ class Admin extends User
         System.out.println("I am an Admin.");
     }
 
+    public void loadBookings(Vector<MaintenanceBooking> m, Vector<InspectionBooking> i, Vector<CleaningBooking> c) {
+        report.setMaintenance(m);
+        report.setInspection(i);
+        report.setCleaning(c);
+        report.refreshAllBookings();
+    }
+
     public void generateSystemReport() 
     {
         report.generate();
@@ -984,7 +1020,6 @@ class Admin extends User
 
 }
 
-
 enum bookingStatus {
     PENDING, CONFIRMED, CANCELLED
 }
@@ -1024,11 +1059,31 @@ public class projekOOP
     System.out.flush();
     }
 
+    public static int getValidatedInput(Scanner scanner, int min, int max){
+        int choice = -1;
+        boolean validInput = false;
+        while (!validInput){
+            System.out.print("Enter your choice: ");
+            try {
+                choice = scanner.nextInt();
+                if (choice<min || choice>max) {
+                    System.out.println("Invalid choice. Please choose " + min + " - " + max + " only!");
+                } else {
+                    validInput = true;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("====================================================");
+                System.out.println("Invalid input. Please choose " + min + " - " + max + " only!");
+                scanner.nextLine();
+            }    
+        }
+        return choice;
+    }
+
     public static void main(String[] args) 
     {
         Scanner scanner = new Scanner(System.in);
-        int mainChoice;     
-                 
+        int mainChoice;        
                  
         do 
         {
@@ -1036,8 +1091,8 @@ public class projekOOP
             System.out.println("[1] Customer");
             System.out.println("[2] Admin");
             System.out.println("[3] Exit");
-            System.out.print("Enter your choice: ");
-            mainChoice = scanner.nextInt();
+            
+            mainChoice = getValidatedInput(scanner, 1, 3);
             System.out.println("====================================================");
             scanner.nextLine(); 
             clearScreen();
@@ -1074,8 +1129,8 @@ public class projekOOP
             System.out.println("[1] I'm a new user (Register)");
             System.out.println("[2] I already have an account (Login)");
             System.out.println("[3] Return");
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
+            
+            choice = getValidatedInput(scanner, 1, 3);
             scanner.nextLine(); 
             clearScreen();
 
@@ -1099,7 +1154,6 @@ public class projekOOP
                     VehicleType v = VehicleType.valueOf(vehicleType);
                     System.out.print("Enter Current Odometer: ");
                     int odo = scanner.nextInt();
-
                     
                     Vehicle newVehicle = new Vehicle(v, vehicleNo, odo);
                     Customer newCustomer = new Customer(newName, newEmail, newPassword, newPhoneNo, newVehicle);
@@ -1141,195 +1195,208 @@ public class projekOOP
 
     public static void viewAllCustomers() 
     {
-    File file = new File("usersCust.txt");
+        File file = new File("usersCust.txt");
 
-    if (!file.exists()) 
-    {
-        System.out.println("No customers found.");
-        return;
-    }
-
-    try (BufferedReader reader = new BufferedReader(new FileReader(file))) 
-    {
-        String line;
-        int count = 1;
-
-        System.out.println("======== REGISTERED CUSTOMERS ========");
-
-        while ((line = reader.readLine()) != null) 
+        if (!file.exists()) 
         {
-            line = line.replaceAll("\\[\\d+\\]\\s*\\|?", "");
-            String[] parts = line.split("\\|");
-
-            if (parts.length >= 6) {
-                String name = parts[0];
-                String email = parts[1];
-                String password = parts[2]; 
-                String phone = parts[3];
-                String plate = parts[4];
-                String type = parts[5];
-
-                System.out.println("Customer #" + count++);
-                System.out.println("  Name     : " + name);
-                System.out.println("  Email    : " + email);
-                System.out.println("  Phone No : " + phone);
-                System.out.println("  Vehicle  : " + type + " (Plate: " + plate + ")");
-                System.out.println("--------------------------------------");
-            }
+            System.out.println("No customers found.");
+            return;
         }
-    } 
-    catch (IOException e) 
-    {
-        System.out.println("Error reading customers: " + e.getMessage());
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) 
+        {
+            String line;
+            int count = 1;
+
+            System.out.println("======== REGISTERED CUSTOMERS ========");
+
+            while ((line = reader.readLine()) != null) 
+            {
+                line = line.replaceAll("\\[\\d+\\]\\s*\\|?", "");
+                String[] parts = line.split("\\|");
+
+                if (parts.length >= 6) {
+                    String name = parts[0];
+                    String email = parts[1];
+                    String password = parts[2]; 
+                    String phone = parts[3];
+                    String plate = parts[4];
+                    String type = parts[5];
+
+                    System.out.println("Customer #" + count++);
+                    System.out.println("  Name     : " + name);
+                    System.out.println("  Email    : " + email);
+                    System.out.println("  Phone No : " + phone);
+                    System.out.println("  Vehicle  : " + type + " (Plate: " + plate + ")");
+                    System.out.println("--------------------------------------");
+                }
+            }
+        } 
+        catch (IOException e) 
+        {
+            System.out.println("Error reading customers: " + e.getMessage());
+        }
     }
-}
-
-
 
     public static void AdminMenu(Scanner scanner) 
     {
         int choice;
         Catalog catalog = new Catalog();
 
+        System.out.print("\n========== ADMIN LOGIN ========== --\nEnter Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Enter Password: ");
+        String password = scanner.nextLine();
+        Admin admin = new Admin();
 
-            System.out.print("\n========== ADMIN LOGIN ========== --\nEnter Email: ");
-            String email = scanner.nextLine();
-            System.out.print("Enter Password: ");
-            String password = scanner.nextLine();
-            Admin admin = new Admin();
+        try
+        {
+            admin.login(email, password);
+        }
+        catch (InvalidLogin e)
+        {
+            System.out.println(e.getMessage());
+        }
 
-            try
-            {
-                admin.login(email, password);
+        Vector<MaintenanceBooking> maintenanceBookings = new Vector<>();
+        Vector<InspectionBooking> inspectionBookings = new Vector<>();
+        Vector<CleaningBooking> cleaningBookings = new Vector<>();
+
+        for (Booking b : Booking.bookingList) {
+            if (b instanceof MaintenanceBooking mb) {
+                maintenanceBookings.add(mb);
+            } else if (b instanceof InspectionBooking ib) {
+                inspectionBookings.add(ib);
+            } else if (b instanceof CleaningBooking cb) {
+                cleaningBookings.add(cb);
             }
-            catch (InvalidLogin e)
-            {
-                System.out.println(e.getMessage());
-            }
+        }
 
-            do 
-            {
-                System.out.println("\n========== ADMIN MENU ==========");
-                //System.out.println("[1] View Bookings"); 
-                System.out.println("[1] Manage Bookings"); 
-                System.out.println("[2] View Customers");
-                System.out.println("[3] Generate Report");
-                System.out.println("[4] View Services Ordered");
-                System.out.println("[5] Manage Catalog");
-                System.out.println("[6] Back to Main Menu");
-                System.out.print("Enter your choice: ");
-                choice = scanner.nextInt();
-                scanner.nextLine(); 
+        do 
+        {
+            System.out.println("\n========== ADMIN MENU ==========");
+            //System.out.println("[1] View Bookings"); 
+            System.out.println("[1] Manage Bookings"); 
+            System.out.println("[2] View Customers");
+            System.out.println("[3] Generate Report");
+            System.out.println("[4] View Services Ordered");
+            System.out.println("[5] Manage Catalog");
+            System.out.println("[6] Back to Main Menu");
+            
+            choice = getValidatedInput(scanner, 1, 6);
+            scanner.nextLine(); 
 
-                switch (choice) {
-                    case 1:
-                        if (Booking.bookingList.isEmpty()) {
-                            System.out.println("No bookings available.");
-                            break;
-                        }
+            switch (choice) {
+                case 1:
+                    if (Booking.bookingList.isEmpty()) {
+                        System.out.println("No bookings available.");
+                        break;
+                    }
 
-                        System.out.println("\n======= MANAGE BOOKINGS =======");
-                        for (int i = 0; i < Booking.bookingList.size(); i++) {
-                            System.out.println("[" + i + "]");
-                            Booking.bookingList.get(i).printDetails();
-                            System.out.println("----------------------------------");
-                        }
+                    System.out.println("\n======= MANAGE BOOKINGS =======");
+                    for (int i = 0; i < Booking.bookingList.size(); i++) {
+                        System.out.println("[" + i + "]");
+                        Booking.bookingList.get(i).printDetails();
+                        System.out.println("----------------------------------");
+                    }
 
-                        System.out.print("Enter the index of the booking to manage: ");
-                        int index;
-                        try {
-                            index = scanner.nextInt();
-                            scanner.nextLine();
-                        } catch (InputMismatchException e) {
-                            System.out.println("Invalid input.");
-                            scanner.nextLine();
-                            break;
-                        }
-
-                        if (index < 0 || index >= Booking.bookingList.size()) {
-                            System.out.println("Invalid booking index.");
-                            break;
-                        }
-
-                        Booking selected = Booking.bookingList.get(index);
-                        System.out.println("\nSelected Booking:");
-                        selected.printDetails();
-
-                        System.out.println("\nWhat would you like to do?");
-                        System.out.println("[1] Confirm Booking");
-                        System.out.println("[2] Cancel Booking");
-                        System.out.println("[3] Do Nothing");
-                        System.out.print("Enter your choice: ");
-                        int subChoice = scanner.nextInt();
+                    System.out.print("Enter the index of the booking to manage: ");
+                    int index;
+                    try {
+                        index = scanner.nextInt();
                         scanner.nextLine();
-
-                        switch (subChoice) {
-                            case 1:
-                                selected.status.confirmStatus();
-                                System.out.println("Booking confirmed.");
-                                break;
-                            case 2:
-                                selected.status.cancelStatus();
-                                System.out.println("Booking cancelled.");
-                                break;
-                            case 3:
-                                System.out.println("No action taken.");
-                                break;
-                            default:
-                                System.out.println("Invalid choice.");
-                        }
-
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input.");
+                        scanner.nextLine();
                         break;
-                    case 2:
-                        viewAllCustomers();
+                    }
+
+                    if (index < 0 || index >= Booking.bookingList.size()) {
+                        System.out.println("Invalid booking index.");
                         break;
+                    }
 
-                    case 3:
-                        //generate report
-                        break;
+                    Booking selected = Booking.bookingList.get(index);
+                    System.out.println("\nSelected Booking:");
+                    selected.printDetails();
 
-                    case 4:
-                        // service diorder currently
-                        break;
+                    System.out.println("\nWhat would you like to do?");
+                    System.out.println("[1] Confirm Booking");
+                    System.out.println("[2] Cancel Booking");
+                    System.out.println("[3] Do Nothing");
+                    
+                    int subChoice = getValidatedInput(scanner, 1, 3);
+                    scanner.nextLine();
 
-                    case 5:
-                        boolean running = true;
-
-                        while (running) 
-                        {
-                        System.out.println("\n=== CATALOG PANEL ===");
-                        System.out.println("1. Add Service to Catalog");
-                        System.out.println("2. View Catalog");
-                        System.out.println("3. Exit");
-                        System.out.print("Enter choice: ");
-                        int cho = scanner.nextInt();
-                        scanner.nextLine(); 
-
-                        switch (cho) 
-                        {
+                    switch (subChoice) {
                         case 1:
-                            admin.addServiceToCatalog(catalog);
+                            selected.status.confirmStatus();
+                            System.out.println("Booking confirmed.");
                             break;
                         case 2:
-                            catalog.viewAllServices();
+                            selected.status.cancelStatus();
+                            System.out.println("Booking cancelled.");
                             break;
                         case 3:
-                            running = false;
+                            System.out.println("No action taken.");
                             break;
                         default:
-                            System.out.println("Invalid option.");
-                        }
-                        }
-                        System.out.println("Exiting admin panel.");
+                            System.out.println("Invalid choice.");
+                    }
 
-                    case 6:
-                        System.out.println("Returning to main menu...");
+                    break;
+                case 2:
+                    viewAllCustomers();
+                    break;
+
+                case 3:
+                    //generate report
+                    admin.loadBookings(maintenanceBookings, inspectionBookings, cleaningBookings);
+                    admin.generateSystemReport();
+                    break;
+
+                case 4:
+                    // service diorder currently
+                    break;
+
+                case 5:
+                    boolean running = true;
+
+                    while (running) 
+                    {
+                    System.out.println("\n=== CATALOG PANEL ===");
+                    System.out.println("1. Add Service to Catalog");
+                    System.out.println("2. View Catalog");
+                    System.out.println("3. Exit");
+                    
+                    int cho = getValidatedInput(scanner, 1, 3);
+                    scanner.nextLine(); 
+
+                    switch (cho) 
+                    {
+                    case 1:
+                        admin.addServiceToCatalog(catalog);
                         break;
-
+                    case 2:
+                        catalog.viewAllServices();
+                        break;
+                    case 3:
+                        running = false;
+                        break;
                     default:
-                        System.out.println("Invalid choice.");
-                }
-            } while (choice != 6);
+                        System.out.println("Invalid option.");
+                    }
+                    }
+                    System.out.println("Exiting admin panel.");
+
+                case 6:
+                    System.out.println("Returning to main menu...");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        } while (choice != 6);
 
     }
 
@@ -1345,8 +1412,8 @@ public class projekOOP
             System.out.println("[3] Manage Vehicle");
             System.out.println("[4] View Booking Status");
             System.out.println("[5] Logout");
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
+            
+            choice = getValidatedInput(scanner, 1, 5);
             scanner.nextLine(); 
 
             switch (choice) 
@@ -1360,8 +1427,8 @@ public class projekOOP
                 System.out.println("[1] Maintenance Service");
                 System.out.println("[2] Cleaning Service");
                 System.out.println("[3] Inspection Service");
-                System.out.print("Enter your choice: ");
-                int serviceChoice = scanner.nextInt();
+                
+                int serviceChoice = getValidatedInput(scanner, 1, 3);
                 scanner.nextLine();
 
                 LocalDate date = null;
@@ -1380,7 +1447,7 @@ public class projekOOP
                     System.out.println("Sorry! No available slots today :(");
                     break;
                 }
-
+                //no inputexception
                 Booking.showAvailableSlots();
                 System.out.print("Choose a time slot (enter index): ");
                 int slotChoice = scanner.nextInt();
@@ -1408,8 +1475,8 @@ public class projekOOP
                 case 2: // Cleaning
                     CleaningPackage.showAllPackages();
                     
-                    System.out.print("Enter package choice [1-" + CleaningPackage.values().length + "]: ");
-                    int pkgChoice = scanner.nextInt();
+                    //System.out.print("Enter package choice [1-" + CleaningPackage.values().length + "]: ");
+                    int pkgChoice = getValidatedInput(scanner, 1, CleaningPackage.values().length);
                     scanner.nextLine();
 
                     try {
@@ -1490,8 +1557,8 @@ public class projekOOP
             System.out.println("[2] Update Vehicle Information");
             System.out.println("[3] Vehicle Service Reminder");
             System.out.println("[4] Back to Dashboard");
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
+            
+            choice = getValidatedInput(scanner, 1, 4);
             scanner.nextLine();
     
             switch (choice) {
