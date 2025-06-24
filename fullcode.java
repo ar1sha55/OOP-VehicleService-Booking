@@ -485,7 +485,6 @@ abstract class User implements InterfaceUser
 
   public abstract void showRole();
 
- 
 }
 
 
