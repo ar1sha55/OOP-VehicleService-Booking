@@ -1279,9 +1279,8 @@ public class projekOOP
             System.out.println("[1] Manage Bookings"); 
             System.out.println("[2] View Customers");
             System.out.println("[3] Generate Report");
-            System.out.println("[4] View Services Ordered");
-            System.out.println("[5] Manage Catalog");
-            System.out.println("[6] Back to Main Menu");
+            System.out.println("[4] Manage Catalog");
+            System.out.println("[5] Back to Main Menu");
             
             choice = getValidatedInput(scanner, 1, 6);
             scanner.nextLine(); 
@@ -1356,10 +1355,6 @@ public class projekOOP
                     break;
 
                 case 4:
-                    // service diorder currently
-                    break;
-
-                case 5:
                     boolean running = true;
 
                     while (running) 
@@ -1389,14 +1384,14 @@ public class projekOOP
                     }
                     System.out.println("Exiting admin panel.");
 
-                case 6:
+                case 5:
                     System.out.println("Returning to main menu...");
                     break;
 
                 default:
                     System.out.println("Invalid choice.");
             }
-        } while (choice != 6);
+        } while (choice != 5);
 
     }
 
