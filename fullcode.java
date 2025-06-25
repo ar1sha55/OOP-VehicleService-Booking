@@ -1452,6 +1452,19 @@ public class projekOOP
                 int serviceChoice = getValidatedInput(scanner, 1, 3);
                 scanner.nextLine();
 
+                // Show services for selected category
+                switch (serviceChoice) {
+                    case 1: // Maintenance
+                        catalog.getServicesOfferedMaintenance(customer.getVehicle().getVehicleType());
+                        break;
+                    case 2: // Cleaning
+                        catalog.getServicesOfferedCleaning(customer.getVehicle().getVehicleType());
+                        break;
+                    case 3: // Inspection
+                        catalog.getServicesOfferedInspection(customer.getVehicle().getVehicleType());
+                        break;
+                }
+
                 LocalDate date = null;
                 while (true) {
                     try {
