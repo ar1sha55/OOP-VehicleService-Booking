@@ -286,23 +286,26 @@ Vehicle{
     private String model;
 
     //Constructor
+    //Constructor
     public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, VehicleType vType, String c, String b, String m){
-        plateNum = pN.toUpperCase();
-        lastServiceOdometerType1 = lSodo1;
-        lastServiceOdometerType2 = lSodo2;
-        lastServiceOdometerType3 = lSodo3;
-        lastServiceOdometerType4 = lSodo4;
-        currentOdometer = cOdo;
-        vehicleType = vType;
-        colour = c.toUpperCase();
-        brand = b.toUpperCase();
-        model = m.toUpperCase();
+        try {
+            plateNum = pN.toUpperCase();
+            lastServiceOdometerType1 = lSodo1;
+            lastServiceOdometerType2 = lSodo2;
+            lastServiceOdometerType3 = lSodo3;
+            lastServiceOdometerType4 = lSodo4;
+            currentOdometer = cOdo;
+            vehicleType = vType;
+            colour = c.toUpperCase();
+            brand = b.toUpperCase();
+            model = m.toUpperCase();
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException("Invalid input entered, Please make sure correct format! \nError: " + e.getMessage());
+        }
     }
 
     public Vehicle(VehicleType vType, String pN, int currentOdo){
-        plateNum = pN.toUpperCase();
-        vehicleType = vType;
-        currentOdometer = currentOdo;
+        this(pN, 0, 0, 0, 0, currentOdo, vType, "", "", "");
     }
 
     //Accessor
