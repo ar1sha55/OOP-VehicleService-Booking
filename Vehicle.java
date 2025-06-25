@@ -1,4 +1,6 @@
-class Vehicle{
+import java.util.*;
+
+public class Vehicle{
     private String plateNum;
     private int lastServiceOdometerType1;
     private int lastServiceOdometerType2;
