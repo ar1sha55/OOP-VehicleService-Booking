@@ -1,21 +1,15 @@
 import java.util.*;
 
 public class Catalog {
-    private ArrayList <Service> servicesOffered;
+    //private ArrayList <Service> servicesOffered;
     private ArrayList <Service> servicesOfferedMaintenance;
     private ArrayList <Service> servicesOfferedCleaning;
     private ArrayList <Service> servicesOfferedInspection;
 
     public Catalog(){
-        servicesOffered = new ArrayList<>();
         servicesOfferedMaintenance = new ArrayList<>();
         servicesOfferedCleaning = new ArrayList<>();
         servicesOfferedInspection = new ArrayList<>();
-
-        //Add general service offered by the service center
-        servicesOffered.add(new Service(1, "Vehicle Maintenance", "Includes oil change, tire rotation, brake check, and engine tune-up to keep your car running smoothly."));
-        servicesOffered.add(new Service(2, "Vehicle Cleaning", "Interior and exterior cleaning with options for wash, vacuum, wax, and full detailing."));
-        servicesOffered.add(new Service(3, "Vehicle Inspection", "Covers safety and performance checks on brakes, tires, lights, and fluid levels."));
 
         //Maintenance
         Service m1 = new Service(101, "Preventative Maintenance & Oil Change", "Includes replacing engine oil and oil filter to ensure proper engine lubrication and prevent early engine wear.");
@@ -61,52 +55,63 @@ public class Catalog {
         servicesOfferedInspection.add(i1);
     }
 
-        public void addGeneralService(Service service) 
-        {
-            servicesOffered.add(service);
-        }
+    public void addMaintenanceService(Service service) 
+    {
+        servicesOfferedMaintenance.add(service);
+    }
 
-        public void addMaintenanceService(Service service) 
-        {
-            servicesOfferedMaintenance.add(service);
-        }
+    public void addCleaningService(Service service) 
+    {
+        servicesOfferedCleaning.add(service);
+    }
 
-        public void addCleaningService(Service service) 
-        {
-            servicesOfferedCleaning.add(service);
-        }
+    public void addInspectionService(Service service) 
+    {
+        servicesOfferedInspection.add(service);
+    }
 
-        public void addInspectionService(Service service) 
-        {
-            servicesOfferedInspection.add(service);
-        }
+    public void viewAllServices(VehicleType type) 
+    {
+        System.out.println("=== Maintenance Services ===");
+            for (Service s : servicesOfferedMaintenance) 
+            {
+            s.displayInfo(type);
+            }
+        System.out.println("=== Cleaning Services ===");
+            for (Service s : servicesOfferedCleaning) 
+            {
+            s.displayInfo(type);
+            }
+        System.out.println("=== Inspection Services ===");
+            for (Service s : servicesOfferedInspection)    
+            {
+            s.displayInfo(type);
+            }
+    }
 
-        public void removeServiceFromGeneral(Service service) 
-        {
-            servicesOffered.remove(service);
-        }
 
-        public void viewAllServices() 
-        {
-            System.out.println("=== General Services ===");
-                for (Service s : servicesOffered) 
-                {
-                s.displayInfo(VehicleType.SEDAN); // or ask user for vehicle type
-                }
-            System.out.println("=== Maintenance Services ===");
-                for (Service s : servicesOfferedMaintenance) 
-                {
+    public void viewAllServices() 
+    {
+        System.out.println("=== Maintenance Services ===");
+            for (Service s : servicesOfferedMaintenance) 
+            {
                 s.displayInfo(VehicleType.SEDAN);
-                }
-            System.out.println("=== Cleaning Services ===");
-                for (Service s : servicesOfferedCleaning) 
-                {
+                s.displayInfo(VehicleType.SUV);
+                s.displayInfo(VehicleType.MPV);
+            }
+        System.out.println("=== Cleaning Services ===");
+            for (Service s : servicesOfferedCleaning) 
+            {
                 s.displayInfo(VehicleType.SEDAN);
-                }
-            System.out.println("=== Inspection Services ===");
-                for (Service s : servicesOfferedInspection)    
-                {
-                s.displayInfo(VehicleType.SEDAN);
-                }
-        }
+                s.displayInfo(VehicleType.SUV);
+                s.displayInfo(VehicleType.MPV);
+            }
+        System.out.println("=== Inspection Services ===");
+            for (Service s : servicesOfferedInspection)    
+            {
+            s.displayInfo(VehicleType.SEDAN);
+            s.displayInfo(VehicleType.SUV);
+            s.displayInfo(VehicleType.MPV);
+            }
+    }
 }
