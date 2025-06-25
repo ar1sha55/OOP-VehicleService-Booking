@@ -1133,29 +1133,33 @@ public class projekOOP
             switch (choice) 
             {
                 case 1:
+                    try {
+                        System.out.print("Enter Name: ");
+                        String newName = scanner.nextLine().trim();
+                        System.out.print("Enter Email: ");
+                        String newEmail = scanner.nextLine();
+                        System.out.print("Enter Phone No.: ");
+                        String newPhoneNo = scanner.nextLine();
+                        System.out.print("Enter Password: ");
+                        String newPassword = scanner.nextLine();
 
-                    System.out.print("Enter Name: ");
-                    String newName = scanner.nextLine().trim();
-                    System.out.print("Enter Email: ");
-                    String newEmail = scanner.nextLine();
-                    System.out.print("Enter Phone No.: ");
-                    String newPhoneNo = scanner.nextLine();
-                    System.out.print("Enter Password: ");
-                    String newPassword = scanner.nextLine();
-
-                    System.out.print("Enter Vehicle Type: ");
-                    String vehicleType = scanner.nextLine().toUpperCase();
-                    System.out.print("Enter Vehicle's Plate No.: ");
-                    String vehicleNo = scanner.nextLine();
-                    VehicleType v = VehicleType.valueOf(vehicleType);
-                    System.out.print("Enter Current Odometer: ");
-                    int odo = scanner.nextInt();
-                    
-                    Vehicle newVehicle = new Vehicle(v, vehicleNo, odo);
-                    Customer newCustomer = new Customer(newName, newEmail, newPassword, newPhoneNo, newVehicle);
-                    newCustomer.register();
-                    clearScreen();
-                    System.out.println("\nYou registered successfully. Please login again. :)\n");
+                        System.out.print("Enter Vehicle Type: ");
+                        String vehicleType = scanner.nextLine().toUpperCase();
+                        System.out.print("Enter Vehicle's Plate No.: ");
+                        String vehicleNo = scanner.nextLine();
+                        VehicleType v = VehicleType.valueOf(vehicleType);
+                        System.out.print("Enter Current Odometer: ");
+                        int odo = scanner.nextInt();
+                        
+                        Vehicle newVehicle = new Vehicle(v, vehicleNo, odo);
+                        Customer newCustomer = new Customer(newName, newEmail, newPassword, newPhoneNo, newVehicle);
+                        newCustomer.register();
+                        clearScreen();
+                        System.out.println("\nYou registered successfully. Please login again. :)\n");
+                    } catch (Exception e){
+                        System.out.println("\nRegistration failed. Make sure all input entered correctly! Error: " + e.getMessage());
+                        scanner.nextLine();
+                    }
                     break;
 
                 case 2:
