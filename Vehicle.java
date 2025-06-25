@@ -1,9 +1,5 @@
 import java.util.*;
 
-enum VehicleType {
-    SEDAN, SUV, MPV
-}
-
 class Vehicle{
     private String plateNum;
     private int lastServiceOdometerType1;
