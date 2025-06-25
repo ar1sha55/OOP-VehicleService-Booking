@@ -764,6 +764,32 @@ class Catalog {
             }
     }
 
+    public void getServicesOfferedMaintenance(VehicleType type) 
+    {
+        System.out.println("=== Maintenance Services ===");
+            for (Service s : servicesOfferedMaintenance)    
+            {
+            s.displayInfo(type);
+            }
+    }
+
+    public void getServicesOfferedCleaning(VehicleType type) 
+    {
+        System.out.println("=== Cleaning Services ===");
+            for (Service s : servicesOfferedCleaning)    
+            {
+            s.displayInfo(type);
+            }
+    }
+
+    public void getServicesOfferedInspection(VehicleType type) 
+    {
+        System.out.println("=== Inspection Services ===");
+            for (Service s : servicesOfferedInspection)    
+            {
+            s.displayInfo(type);
+            }
+    }
 
     public void viewAllServices() 
     {
