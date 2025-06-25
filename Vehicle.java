@@ -1,5 +1,3 @@
-import java.util.*;
-
 class Vehicle{
     private String plateNum;
     private int lastServiceOdometerType1;
@@ -14,22 +12,24 @@ class Vehicle{
 
     //Constructor
     public Vehicle(String pN, int lSodo1,int lSodo2,int lSodo3,int lSodo4, int cOdo, VehicleType vType, String c, String b, String m){
-        plateNum = pN.toUpperCase();
-        lastServiceOdometerType1 = lSodo1;
-        lastServiceOdometerType2 = lSodo2;
-        lastServiceOdometerType3 = lSodo3;
-        lastServiceOdometerType4 = lSodo4;
-        currentOdometer = cOdo;
-        vehicleType = vType;
-        colour = c.toUpperCase();
-        brand = b.toUpperCase();
-        model = m.toUpperCase();
+        try {
+            plateNum = pN.toUpperCase();
+            lastServiceOdometerType1 = lSodo1;
+            lastServiceOdometerType2 = lSodo2;
+            lastServiceOdometerType3 = lSodo3;
+            lastServiceOdometerType4 = lSodo4;
+            currentOdometer = cOdo;
+            vehicleType = vType;
+            colour = c.toUpperCase();
+            brand = b.toUpperCase();
+            model = m.toUpperCase();
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException("Invalid input entered, Please make sure correct format! \nError: " + e.getMessage());
+        }
     }
 
     public Vehicle(VehicleType vType, String pN, int currentOdo){
-        plateNum = pN.toUpperCase();
-        vehicleType = vType;
-        currentOdometer = currentOdo;
+        this(pN, 0, 0, 0, 0, currentOdo, vType, "", "", "");
     }
 
     //Accessor
@@ -161,11 +161,16 @@ class Vehicle{
         System.out.println("Tire Rotation: " + lastServiceOdometerType2);
         System.out.println("Wheel Balancing, Brake Inspection, and Alignment Check: " + lastServiceOdometerType3);
         System.out.println("Cooling System, Engine, and Transmission Check: " + lastServiceOdometerType4);
+    }
+
+    public void reminderDisplay(){
         System.out.println("\n-- Upcoming Service Reminder --");
-        for (int i=0; i<serviceReminder().size(); i++){
-            System.out.println((i+1) + ". " + serviceReminder());
+        ArrayList<String> reminders = serviceReminder();
+        for (int i = 0; i < reminders.size(); i++) {
+            System.out.println((i+1) + ". " + reminders.get(i));
         }
     }
+
 
     @Override
     public String toString() {
