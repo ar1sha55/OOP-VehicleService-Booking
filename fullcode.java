@@ -1572,80 +1572,84 @@ public class projekOOP
         customer.getVehicle().displayInfo();
     }
     
-    private static void updateVehicleInfo(Scanner scanner, Customer customer) {
-        Vehicle vehicle = customer.getVehicle();
-        System.out.println("\n========== UPDATE VEHICLE INFORMATION ==========");
-        
-        System.out.println("\nCurrent Vehicle Information:");
-        vehicle.displayInfo();
-        
-        System.out.println("\nEnter new details (leave blank to keep current value):");
-        
-        System.out.print("Vehicle Type (" + vehicle.getVehicleType() + "): ");
-        String typeInput = scanner.nextLine();
-        if (!typeInput.isEmpty()) {
-            vehicle.setVehicleType(VehicleType.valueOf(typeInput.toUpperCase()));
+    public static void updateVehicleInfo(Scanner scanner, Customer customer) {
+        try {
+            Vehicle vehicle = customer.getVehicle();
+            System.out.println("\n========== UPDATE VEHICLE INFORMATION ==========");
+            
+            System.out.println("\nCurrent Vehicle Information:");
+            vehicle.displayInfo();
+            
+            System.out.println("\nEnter new details (leave blank to keep current value):");
+            
+            System.out.print("Vehicle Type (" + vehicle.getVehicleType() + "): ");
+            String typeInput = scanner.nextLine();
+            if (!typeInput.isEmpty()) {
+                vehicle.setVehicleType(VehicleType.valueOf(typeInput.toUpperCase()));
+            }
+            
+            System.out.print("Plate Number (" + vehicle.getPlateNum() + "): ");
+            String plateInput = scanner.nextLine();
+            if (!plateInput.isEmpty()) {
+                vehicle.setPlateNum(plateInput);
+            }
+            
+            System.out.print("Brand (" + vehicle.getBrand() + "): ");
+            String brandInput = scanner.nextLine();
+            if (!brandInput.isEmpty()) {
+                vehicle.setBrand(brandInput);
+            }
+            
+            System.out.print("Model (" + vehicle.getModel() + "): ");
+            String modelInput = scanner.nextLine();
+            if (!modelInput.isEmpty()) {
+                vehicle.setModel(modelInput);
+            }
+            
+            System.out.print("Color (" + vehicle.getColour() + "): ");
+            String colorInput = scanner.nextLine();
+            if (!colorInput.isEmpty()) {
+                vehicle.setColour(colorInput);
+            }
+            
+            System.out.print("Current Odometer (" + vehicle.getCurrentOdometer() + "): ");
+            String odoInput = scanner.nextLine();
+            if (!odoInput.isEmpty()) {
+                vehicle.setCurrentOdometer(Integer.parseInt(odoInput));
+            }
+            
+            // Update last service odometer readings
+            System.out.println("\nUpdate Last Service Odometer Readings:");
+            System.out.print("Preventative Maintenance (" + vehicle.getlastServiceOdometerType1() + "): ");
+            String service1Input = scanner.nextLine();
+            if (!service1Input.isEmpty()) {
+                vehicle.setlastServiceOdometerType1(Integer.parseInt(service1Input));
+            }
+            
+            System.out.print("Tire Rotation (" + vehicle.getlastServiceOdometerType2() + "): ");
+            String service2Input = scanner.nextLine();
+            if (!service2Input.isEmpty()) {
+                vehicle.setlastServiceOdometerType2(Integer.parseInt(service2Input));
+            }
+            
+            System.out.print("Wheel Balancing (" + vehicle.getlastServiceOdometerType3() + "): ");
+            String service3Input = scanner.nextLine();
+            if (!service3Input.isEmpty()) {
+                vehicle.setlastServiceOdometerType3(Integer.parseInt(service3Input));
+            }
+            
+            System.out.print("Cooling System Check (" + vehicle.getlastServiceOdometerType4() + "): ");
+            String service4Input = scanner.nextLine();
+            if (!service4Input.isEmpty()) {
+                vehicle.setlastServiceOdometerType4(Integer.parseInt(service4Input));
+            }
+            
+            System.out.println("\nVehicle information updated successfully!");
+        } catch (Exception e) {
+            System.out.println("Error occured! Please entered information in correct format! \nError: "+e.getMessage());
         }
-        
-        System.out.print("Plate Number (" + vehicle.getPlateNum() + "): ");
-        String plateInput = scanner.nextLine();
-        if (!plateInput.isEmpty()) {
-            vehicle.setPlateNum(plateInput);
-        }
-        
-        System.out.print("Brand (" + vehicle.getBrand() + "): ");
-        String brandInput = scanner.nextLine();
-        if (!brandInput.isEmpty()) {
-            vehicle.setBrand(brandInput);
-        }
-        
-        System.out.print("Model (" + vehicle.getModel() + "): ");
-        String modelInput = scanner.nextLine();
-        if (!modelInput.isEmpty()) {
-            vehicle.setModel(modelInput);
-        }
-        
-        System.out.print("Color (" + vehicle.getColour() + "): ");
-        String colorInput = scanner.nextLine();
-        if (!colorInput.isEmpty()) {
-            vehicle.setColour(colorInput);
-        }
-        
-        System.out.print("Current Odometer (" + vehicle.getCurrentOdometer() + "): ");
-        String odoInput = scanner.nextLine();
-        if (!odoInput.isEmpty()) {
-            vehicle.setCurrentOdometer(Integer.parseInt(odoInput));
-        }
-        
-        // Update last service odometer readings
-        System.out.println("\nUpdate Last Service Odometer Readings:");
-        System.out.print("Preventative Maintenance (" + vehicle.getlastServiceOdometerType1() + "): ");
-        String service1Input = scanner.nextLine();
-        if (!service1Input.isEmpty()) {
-            vehicle.setlastServiceOdometerType1(Integer.parseInt(service1Input));
-        }
-        
-        System.out.print("Tire Rotation (" + vehicle.getlastServiceOdometerType2() + "): ");
-        String service2Input = scanner.nextLine();
-        if (!service2Input.isEmpty()) {
-            vehicle.setlastServiceOdometerType2(Integer.parseInt(service2Input));
-        }
-        
-        System.out.print("Wheel Balancing (" + vehicle.getlastServiceOdometerType3() + "): ");
-        String service3Input = scanner.nextLine();
-        if (!service3Input.isEmpty()) {
-            vehicle.setlastServiceOdometerType3(Integer.parseInt(service3Input));
-        }
-        
-        System.out.print("Cooling System Check (" + vehicle.getlastServiceOdometerType4() + "): ");
-        String service4Input = scanner.nextLine();
-        if (!service4Input.isEmpty()) {
-            vehicle.setlastServiceOdometerType4(Integer.parseInt(service4Input));
-        }
-        
-        System.out.println("\nVehicle information updated successfully!");
     }
-
+    
     public static void viewServiceReminder(Customer customer){
         customer.getVehicle().reminderDisplay();
     }
